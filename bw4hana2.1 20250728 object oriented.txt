@@ -1,0 +1,254 @@
+*&---------------------------------------------------------------------*
+*& Report ZNIRAV_OOP
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT znirav_oop.
+
+
+**----------------: CLASS DEFINITION.
+CLASS myclass DEFINITION.
+
+  PUBLIC SECTION.
+
+    TYPES: String_20 TYPE c LENGTH 20,                   "-------:TYPE DECLARATION
+           ty_t_cars TYPE TABLE OF zncars.
+
+    CLASS-DATA: stat_var  TYPE String_20,              "-------:STATIC-ATTRIBUTE DECLARATION
+                stat_name TYPE string_20.
+
+    DATA: cl_srnm     TYPE String,
+          cl_username TYPE c LENGTH 20 READ-ONLY VALUE 'Nirav Patel',                         "-------:INSTANCE-ATTRIBUTE DECLARATION
+          cl_car_tab  TYPE TABLE OF zncars,
+          im_varr     TYPE c LENGTH 16,
+          lt_cars     TYPE ty_t_cars.
+
+    METHODS: name IMPORTING im_var TYPE String         "-------: INSTANCE METHOD DECLARATIONS
+                  EXPORTING ex_var TYPE string.
+
+    METHODS: area IMPORTING length  TYPE i
+                            breadth TYPE i
+                  EXPORTING area    TYPE i.
+
+    METHODS: surname CHANGING ch_surname  TYPE String.
+
+    METHODS: prefered_param IMPORTING num1 TYPE i OPTIONAL
+                                      num2 TYPE i OPTIONAL
+                                      num3 TYPE i OPTIONAL
+                                        PREFERRED PARAMETER num1.
+
+    METHODS: formal_param IMPORTING i_num       TYPE i
+                                    i_land1     TYPE land1
+                                    i_timestamp TYPE timestamp
+                                    i_string_20 TYPE  string_20
+                                    i_ty_t_cars TYPE ty_t_cars
+                                    i_wa_cars   LIKE LINE OF lt_cars .
+
+    METHODS: ref_value IMPORTING REFERENCE(i_ref_var) TYPE String
+                                 VALUE(i_val_var)     TYPE String.
+
+
+
+    CLASS-METHODS: properties IMPORTING im_var1    LIKE im_varr        "-------: STATIC METHOD DECLARATIONS
+                              EXPORTING ex_car_tab LIKE cl_car_tab.
+
+ENDCLASS.
+
+**----------------: CLASS IMPLEMENTATION.
+CLASS myclass IMPLEMENTATION.
+
+  METHOD name.
+    ex_var  = im_var.
+    WRITE:/ ex_var.
+  ENDMETHOD.
+
+
+  METHOD area.
+    area  = length * breadth.
+    WRITE:/ | area of the rectangle is : { area } |.
+  ENDMETHOD.
+
+
+  METHOD surname.
+    ch_surname = cl_srnm.
+  ENDMETHOD.
+
+  METHOD properties.
+    DATA(lv_length) = strlen( im_var1 ).
+    DATA(firstletter) = im_var1+0(1).
+    TRANSLATE firstletter TO UPPER CASE.
+
+    DATA(lv_brand_name) = firstletter && im_var1+1(lv_length).
+    SELECT * FROM zncars INTO TABLE @ex_car_tab WHERE brand = @im_var1.
+    cl_demo_output=>display( ex_car_tab ).
+
+  ENDMETHOD.
+
+  METHOD prefered_param.
+
+    IF num1 IS SUPPLIED.
+      WRITE:/ 'Num1 is supplied'.
+    ENDIF.
+
+    IF num2 IS SUPPLIED.
+      WRITE:/ 'Num2 is supplied'.
+    ENDIF.
+
+    IF num3 IS SUPPLIED.
+      WRITE:/ 'Num3 is supplied'.
+    ENDIF.
+
+  ENDMETHOD.
+
+  METHOD formal_param.
+
+    WRITE:/ i_num.
+    WRITE:/ i_land1.
+    WRITE:/ i_timestamp.
+    WRITE:/ i_string_20.
+    WRITE:/ i_wa_cars.
+    cl_demo_output=>display( i_ty_t_cars ).
+
+
+  ENDMETHOD.
+
+
+  METHOD: ref_value.
+
+    i_val_var = 'Pratham'.
+    WRITE:/  i_ref_var.
+    WRITE:/  i_val_var.
+
+  ENDMETHOD.
+
+
+
+ENDCLASS.
+
+
+
+
+**----------------:STARTING OF SELECTION (it is mandatory for calling method)
+START-OF-SELECTION.
+
+
+**----------------: MAIN INSTANCE / OBJECT DELECRATION AND CREATION.
+  DATA: myobj TYPE REF TO myclass.
+  CREATE OBJECT myobj.
+
+**----------------: LOCAL VARIABLE DECLARATION THAT I'VE USED IN FURTHER METHOD CALLING FOR OUTPUT
+*
+  DATA: lv_var     TYPE string,
+        lv_area    TYPE i,
+        lv_surname TYPE string,
+        lv_carname TYPE String,
+        lt_cartab  TYPE TABLE OF zncars.
+
+
+
+**----------------: INOUT PARAMETERS FOR METHODS INPUT
+*  PARAMETERS name TYPE string.
+*  PARAMETERS len TYPE i.
+*  PARAMETERS bre TYPE i.
+*  PARAMETERS surname TYPE String.
+*  PARAMETERS text TYPE myclass=>string_20.                   " USING CLASS TYPE.. VIA CLASS NAME ( String_20 ).
+*  PARAMETERS ip_brdnm TYPE c LENGTH 16 LOWER CASE .
+  PARAMETERS: ip_num   TYPE i,
+              ip_land1 TYPE land1,
+              ip_tmstm TYPE timestamp,
+              ip_str   TYPE myclass=>string_20.
+
+
+**----------------: ACCESSING CLASS INSTANCE-ATTIBUTE.
+*  myobj->cl_srnm = surname.
+*DATA(Username) = myobj->cl_username.
+*write:/ username.
+
+
+*-----: CREATING DIFF INSTANCE AND ACCESSING STATIC AND INSTANCE VARIABLE TO SEE DIFFERENCE.
+*  DATA: myobj1 TYPE REF TO myclass,
+*        myobj2 TYPE REF TO myclass,
+*        myobj3 TYPE REF TO myclass.
+*  CREATE OBJECT myobj1.
+*  CREATE OBJECT myobj2.
+*  CREATE OBJECT myobj3.
+*
+**-----: INSTANCE VARIABLE
+*  myobj->cl_srnm = 'Patel'.
+*  myobj1->cl_srnm = 'Diyora'.
+*  myobj2->cl_srnm = 'Pavasiya'.
+*  myobj3->cl_srnm = 'Lakhani'.
+*
+*  WRITE:/ myobj->cl_srnm.
+*  WRITE:/ myobj1->cl_srnm.
+*  WRITE:/ myobj2->cl_srnm.
+*  WRITE:/ myobj3->cl_srnm && 'myobj3'.
+*
+*
+**-----: STATIC VARIABLE
+*myobj->stat_name = 'Patel'.
+*  WRITE:/ myobj->stat_name.
+*  WRITE:/ myobj1->stat_name.
+*   myobj1->stat_name = 'Diyora'.
+*  WRITE:/ myobj->stat_name.
+*  WRITE:/ myobj3->stat_name.
+
+
+**----------------: ACCESSING CLASS STATIC-ATTIBUTE.
+*myclass=>stat_var = text.                                     " ACCESSING AND ASSIGNING TO STATIC VARIABLE USING CLASS NAME.
+*WRITE:/ 'Static Variable:-' &&  myclass=>stat_var.
+
+
+**----------------------------: INSTANCE METHOD CALLING.
+
+**--------:METHOD NAME (NORMAL IMPORT EXPORT Parameter)
+*  myobj->name( EXPORTING im_var = name
+*               IMPORTING ex_var = lv_var ).
+*
+***--------:METHOD AREA ( MORE THAN 2 IMPORTING Parameter )
+*  myobj->area( EXPORTING length = len
+*                         breadth = bre
+*               IMPORTING area = lv_area ).
+
+***--------:METHOD SURNAME ( CHANGING Parameter)
+*  myobj->surname( CHANGING ch_surname = lv_surname ).
+*  cl_demo_output=>display( lv_surname ).
+
+
+
+
+  "---------------------: STATIC METHOD CALLING
+
+*myclass=>properties( EXPORTING im_var1 = ip_brdnm
+*                     IMPORTING ex_car_tab = lt_cartab ).
+*
+*cl_demo_output=>display( lv_carname ).
+
+
+*-------------:         PREFERRES PARAMETER OPERATING (Prefered Parameter is NUM1).
+
+* when the parameter name is specified then it will assign to that parameter or if the parameter name....
+*is not specified then it will assign to prefered variable
+
+*myobj->prefered_param( 3 ).           " HERE IT WILL TAKE NUM1 VALUE AS 3, COZ ITS PREFERED PARAMETER.
+*myobj->prefered_param( EXPORTING num2 = 2 ).  " HERE IT WILL JUST ASSIGN TO NUM2.
+*myobj->prefered_param( EXPORTING num3 = 2 ).  " SIMILAR LIKE PREFIOUSE ASSIGN TO NUM3.
+
+
+
+*---------------------------: FORMAL PARAMETERS.
+
+  SELECT SINGLE * FROM zncars INTO @DATA(wa_cars) WHERE car_index = 69.
+  SELECT * FROM zncars INTO TABLE @DATA(s_lt_cars).
+  TYPES lt_cars TYPE TABLE OF zncars.
+
+  myobj->formal_param( EXPORTING i_num = ip_num
+  i_land1 = ip_land1
+  i_timestamp = ip_tmstm
+  i_string_20 = ip_str
+  i_ty_t_cars = s_lt_cars             " this will be created as table because this import variable was created using table type.
+   i_wa_cars = wa_cars ).             " here only single record is stored as of it is a import variable created using ( LIKE LINE OF ) 
+
+
+*---------------------------: REFRENCE VAR IMPORT AND VALUE VAR IMPORT
+*MYOBJ->ref_value( EXPORTING i_ref_var = 'Nirav' i_val_var = 'Patel' ).

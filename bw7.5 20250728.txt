@@ -1,0 +1,910 @@
+*&---------------------------------------------------------------------*
+*& Report ZNIRAV
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT znirav.
+
+
+* creating constant and seeing the error when changing constant.
+*CONSTANTS cnst TYPE String VALUE 'immutable'.
+*cnst = 'hello'.
+
+* creating custom type
+TYPES: string_5(5)   TYPE c,
+       string_20(20) TYPE c.
+
+*flat structure declaration.
+TYPES: BEGIN OF str_string,
+
+         str  TYPE string_20,
+       END OF str_string.
+
+TYPES: BEGIN OF no_num,
+         num(3) TYPE n,
+       END OF no_num.
+
+TYPES: BEGIN OF txt_num,
+         text   TYPE string,
+         num(3) TYPE n,
+       END OF txt_num.
+
+TYPES: BEGIN OF structure_name,
+         name    TYPE string_20,
+         surname TYPE string_20,
+         age     TYPE i.
+**   age2 TYPE i,
+*         str  TYPE string_20.
+
+TYPES:
+       END OF structure_name.
+
+
+
+TYPES: BEGIN OF structure1,
+         person_name    TYPE string_20,
+         person_surname TYPE string_20,
+         age            TYPE i.
+    INCLUDE TYPE str_string.
+TYPES:
+       END OF structure1.
+
+TYPES: BEGIN OF stru,
+         line1 TYPE  string,
+         line2 TYPE string,
+         line3 TYPE i.
+TYPES END OF stru.
+
+TYPES: BEGIN OF line ,
+         line1 TYPE string,
+         line2 TYPE string,
+       END OF line.
+
+TYPES: BEGIN OF zn_rtl,
+         calmonth(6)     TYPE n,
+         trn_id(3)       TYPE n,
+         sales_dt        TYPE d,
+         customerid(7)   TYPE n,
+         gender(6)       TYPE c,
+         age(3)          TYPE n,
+         product_ctg(30) TYPE c,
+         quantity(3)     TYPE n,
+         unitp           TYPE i,
+         totalamount     TYPE i,
+       END OF zn_rtl.
+
+TYPES: BEGIN OF ty_s_dates,
+         year(4)  TYPE c,
+         month(2) TYPE c,
+         date(2)  TYPE c,
+       END OF ty_s_dates.
+
+TYPES: BEGIN OF date,
+         date TYPE d,
+       END OF date.
+
+
+TYPES ty_t_dates TYPE TABLE OF ty_s_dates WITH NON-UNIQUE DEFAULT KEY.
+
+*  deep structure declaration.
+TYPES: BEGIN OF ty_s_deep_structure,
+         ds_date      TYPE d,
+         calmonth(6)  TYPE n,
+         month_str(3) TYPE c,
+         split_date   TYPE ty_t_dates,
+       END OF ty_s_deep_structure.
+
+
+* table types declaration.
+TYPES: ty_t_itab      TYPE SORTED TABLE OF structure_name WITH UNIQUE KEY primary_key COMPONENTS name,
+       ty_t_itab1     TYPE SORTED TABLE OF structure1 WITH UNIQUE KEY primary_key COMPONENTS age,
+       ty_t_itab_h    TYPE HASHED TABLE OF structure_name WITH UNIQUE KEY primary_key COMPONENTS name,
+       ty_t_itab_std  TYPE STANDARD TABLE OF structure_name,
+       ty_t_itab_std1 TYPE STANDARD TABLE OF structure_name WITH EMPTY KEY,
+       ln_line        TYPE SORTED TABLE OF line WITH NON-UNIQUE KEY line2,
+       ty_t_date      TYPE TABLE OF ty_s_dates WITH EMPTY KEY,
+       ty_t_ds_stru   TYPE TABLE OF ty_s_deep_structure.
+
+
+* table declaration.
+DATA ln_line TYPE  TABLE OF stru WITH NON-UNIQUE KEY primary_key COMPONENTS line3
+      WITH NON-UNIQUE SORTED KEY line2 COMPONENTS line2.
+DATA: str_tab     TYPE SORTED TABLE OF str_string WITH UNIQUE KEY str,
+      num_tab     TYPE STANDARD TABLE OF no_num,
+      text_num    TYPE TABLE OF txt_num,
+      single_date TYPE SORTED TABLE OF date WITH UNIQUE KEY primary_key COMPONENTS date,
+      tab_name    TYPE ty_t_itab_std,
+      tab_name1   TYPE ty_t_itab_std,
+      target1     TYPE ty_t_itab,
+      target2     TYPE ty_t_itab,
+      target3     TYPE ty_t_itab_std,
+      target4     TYPE ty_t_itab1,
+      ds_date     TYPE ty_t_ds_stru,
+      ds_date1    TYPE ty_t_ds_stru,
+*      rtl       TYPE TABLE OF /bic/azn_rtl12,
+      date        TYPE TABLE OF ty_s_dates WITH EMPTY KEY.
+
+
+
+* work area declaration.
+DATA: wa_test TYPE ty_t_itab_std.
+
+
+*  value initialization for tab_name.
+ln_line = VALUE #( ( line1 = 'e'  line2 = 'f' line3 = 6 )
+                ( line1 = 'e'  line2 = 'a' line3 = 9 )
+                ( line1 = 'e'  line2 = 'a' line3 = 8 )
+                ( line1 = 'e'  line2 = 'a' line3 = '7' )
+                ( line1 = 'c'  line2 = 'a' line3 = '5' )
+                ( line1 = 'z'  line2 = 'a' line3 = '4' )
+                ( line1 = 'q'  line2 = 'z' line3 = 3 ) ).
+
+tab_name = VALUE #( ( name = 'Nirav' surname = 'Patel' age = 28  )
+                     ( name = 'Nirav' surname = 'Patel' age = 28 )
+                     ( name = 'Nirav' surname = 'Mishra' age = 29 )
+                     ( name = 'Nirav' surname = 'Mishra' age = 29 )
+                     ( name = 'Nirav' surname = 'Mishra' age = 29 )
+                     ( name = 'Nirav' surname = 'Mishra' age = 25 )
+                     ( name = 'Nirav' surname = 'Mishra' age = 29 )
+                     ( name = 'Nirav7' surname = 'Mishra7' age = 23 )
+                     ( name = 'Nirav8' surname = 'Patel8' age = 22 )
+                     ( name = 'Nirav9' surname = 'Mishra9' age = 21 )
+                     ( name = 'Nirav10' surname = 'Mishra10' age = 20 )
+                     ( name = 'Nirav11' surname = 'Mishra11' age = 31 ) ).
+
+str_tab = VALUE #( ( str = 'niravpatel'  ) ).
+
+num_tab = VALUE #( ( num = 81282824 ) ).
+
+
+
+target2 = VALUE #( ( name = 'Preet' surname = 'Patel' age = 22  )
+                     ( name = 'Harshil' surname = 'Pavasiya' age = 25 ) ).
+
+target1 = VALUE #( ( name = 'Nirav' surname = 'Patel' age = 21  )
+                   ( name = 'Pratham' surname = 'Patel' age = 23 )
+                   ( name = 'Vedant' surname = 'Patel' age = 22  )
+                   ( name = 'Janvi' surname = 'Diyora' age = 27  )
+                   ( name = 'Ishita' surname = 'Dungrani' age = 27 )
+                   ( name = 'Harshit' surname = 'Lakhani' age = 25 )
+                   ( name = 'Shiv' surname = 'Patel' age = 24 ) ).
+
+*target2 = CORRESPONDING #( BASE ( target2 ) target1 ).
+*cl_demo_output=>display( target2 ).
+
+*---------------------------------------------: CORRESPONDING DOCUMENT
+
+*ds_date = VALUE #( ( ds_date = 20250624
+*                   month_str = 'Jun' calmonth = '202506'
+*                   split_date = VALUE #( ( year = '2025'
+*                                           month = '06'
+*                                           date = '24' )
+*
+*                                         ( year = '2023'
+*                                           month = '11'
+*                                           date = '24' )
+*
+*                                           ( year = '2022'
+*                                           month = '11'
+*                                           date = '24' ) ) )
+*
+*                   ( ds_date = 20240521
+*                   month_str = 'May' calmonth = '202505'
+*                   split_date = VALUE #( ( year = '2024'
+*                                           month = '05'
+*                                           date = '21' ) ) ) ).
+*
+*
+*ds_date1 = CORRESPONDING #( ds_date ).
+**MOVE-CORRESPONDING ds_date TO ds_date1.
+*DATA(d_date) = ds_date1[ 2 ]-split_date.
+*cl_demo_output=>display( d_date ).
+
+
+
+
+
+
+
+
+
+*cl_demo_output=>display( target2 ).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+target3 = VALUE #( ( name = 'Nirav' surname = 'Patel' age = 20  )
+                   ( name = 'Nirav' surname = 'Patel' age = 20  )
+                   ( name = 'Nirav' surname = 'Patel' age = 20  )
+                   ( name = 'Nirav' surname = 'Patel' age = 20  )
+                   ( name = 'Nirav' surname = 'Mishra1' age = 29 )
+                   ( name = 'Nirav2' surname = 'Mishra2' age = 28 )
+                   ( name = 'Nirav3' surname = 'Mishra3' age = 27 ) ).
+*clear target3[ 6 ].
+*cl_demo_output=>display( target3[ 6 ] ).
+
+*IF line_exists( target3[ name = 'Nirav3' ] ).
+*  WRITE:/ 'Hello'.
+*ENDIF.
+
+*IF line_index( target3[ name = 'Nirav3' ] ) =  3.
+*  WRITE:/ 'Hello'.
+*ENDIF.
+
+*ASSIGN target3[ name  = 'Nirav2' ] TO FIELD-SYMBOL(<fs>).
+*WRITE:/  <fs>-surname.
+
+*DATA(wa_x) = ref #( target3[ name = 'Nirav2' ] ).
+*
+*wa_x->*-name = 'janvi' .
+*cl_demo_output=>display( target3[ surname = 'Mishra2' ] ).
+
+*DATA wa_x1 TYPE structure_name.
+*DATA wa_x2 TYPE structure_name.
+*wa_x2-name = 'janvi'.
+*wa_x1 = VALUE #( target3[ name = 'Nirav5' ] DEFAULT wa_x2 ).
+*cl_demo_output=>display( wa_x1 ). .
+
+*wa_x1 = target3[ name = 'Nirav2' ]-surname.
+*cl_demo_output=>display( wa_x1 ). .
+
+*date = VALUE #( ( year = '2025' month  = '03' date = '17' )
+*                ( year = '2025' month  = '07' date = '16' )
+*                ( year = '2025' month  = '09' date = '23' )
+*                ( year = '2025' month  = '06' date = '31' ) ).
+
+*str_tab = VALUE #( ( age1 = 21 str = 'Project less' )
+*                   ( age1 = 23 str = 'pepsico' )
+*                   ( age1 = 22 str = 'ceppm') ).
+
+*DATA target_n TYPE SORTED TABLE OF structure_name WITH UNIQUE KEY age.
+*
+*target_n = CORRESPONDING #( target1 FROM str_tab USING KEY primary_key  age1 = age MAPPING str = str ).
+*
+*target_n = CORRESPONDING #( target1 FROM str_tab USING KEY primary_key age1 = age MAPPING str = str ).
+
+
+* how it handles duplicacy in non-unique key.
+* DATA(ty_t_itab) = VALUE ln_line(  ( line1 = 'a'  line2 = 'a' )
+* ( line1 = 'z'  line2 = 'a' ) ( line1 = 'b'  line2 = 'a' ) ) .
+*
+* DATA(jtab) = VALUE ty_t_itab( ( line1 = 'e'  line2 = 'f' )
+*                          ( line1 = 'c'  line2 = 'a' )
+*                          ( line1 = 'f'  line2 = 'a' )
+*                          ( line1 = 'c'  line2 = 'z' ) ).
+*
+* INSERT LINES OF jtab INTO TABLE ln_line.
+* cl_demo_output=>display( ln_line ).
+
+
+* corresponding key word.
+*target2 = CORRESPONDING  #( tab_name ).
+
+
+* READ START-----------------------------------------------------------------------------------------------------------------------------------------
+
+*working or primary key and secondary key and components.
+
+*READ TABLE ln_line INDEX 1 USING KEY primary_key INTO DATA(itab1).
+*READ TABLE ln_line INTO DATA(wa) WITH TABLE KEY primary_key COMPONENTS line3 = 3.
+* cl_demo_output=>display( wa ).
+
+
+**using keys from work area.
+*DATA(wa1) = VALUE stru( line3 = 3 line1 = 'a' ).
+*DATA(line) = ln_line[ KEY primary_key line3 = 9 line1 = 'f'  ].
+* cl_demo_output=>display( line ).
+
+
+**reading table with free key.
+*READ TABLE ln_line INTO DATA(x) WITH KEY line1 = 'e'.
+* cl_demo_output=>display( x ).
+
+* using transporting
+*READ TABLE ln_line INTO DATA(wa) TRANSPORTING line1 WITH KEY line3 = 3.
+*cl_demo_output=>display( wa ).
+
+** read using free key.
+*READ TABLE ln_line INTO DATA(wa) WITH KEY line3 = 9.
+*DATA(wa1) = wa-line3.
+* cl_demo_output=>display( wa1 ).
+
+
+**  READ TABLE tab_name INTO DATA(wa) WITH TABLE KEY primary_key COMPONENTS name = 'Nirav'.
+**using custom type.
+*DATA str TYPE String_10.
+**str = '12345678901'.
+*cl_demo_output=>display( target2 ).
+
+
+*READ TABLE tab_name INTO DATA(wa_1) WITH kEY name = 'Nirav'.
+*DATA(wa_2) = wa_1-name.
+*cl_demo_output=>display( wa_2 ).
+
+* reference into...
+*DATA str4 TYPE REF TO structure_name.
+*READ TABLE tab_name REFERENCE INTO str4 INDEX 1.
+*str4->name = 'hello'.
+*cl_demo_output=>display( tab_name ).
+
+* using variable before initialization.
+*DATA: a TYPE i,
+*      b TYPE i,
+*      c TYPE i.
+*DATA sum TYPE i.
+*a = 10.
+*b = 20.
+*sum = a + b + c.
+*c = 10.
+*cl_demo_output=>display( sum ).
+
+* using where in that where condition string operations.
+* CO, CN, CA, NA, CP, NP, CS, NP.
+DATA: str1 TYPE String VALUE 'Hello World',
+      str2 TYPE String VALUE 'World'.
+**
+** Contains Only------------------------------------------
+*IF str2 CO str1.
+*  WRITE 'Contains Only: True'.
+*ELSE.
+*  WRITE 'Contains Only: False'.
+*ENDIF.
+*
+*
+**Contains Not Only---------------------------------------
+*IF str2 CN str1.
+*  WRITE:/ 'Contains Not Only: True'.
+*
+*ELSE.
+*  WRITE:/ 'Contains Not Only: False'.
+*ENDIF.
+*
+*
+** Contains String----------------------------------------
+*IF str1 CS str2.
+*  WRITE:/ 'Contains String: True'.
+*
+*ELSE.
+*  WRITE:/ 'Contains String: False'.
+*ENDIF.
+*
+*
+** Contains No String-------------------------------------
+*IF str1 NS str2.
+*  WRITE:/ 'Contains No String: True'.
+*ELSE.
+*  WRITE:/ 'Contains No String: False'.
+*ENDIF.
+*
+*
+** Cotains Any--------------------------------------------
+*str2 = 'Niav'.
+*IF str1 CA str2.
+*  WRITE:/ 'Contains Any: True'.
+*ELSE.
+*  WRITE:/ 'Contains Any: False'.
+*ENDIF.
+*
+*
+** Contains Not Any--------------------------------------
+*IF str1 NA str2.
+*  WRITE:/ 'Contains Not Any: True'.
+*ELSE.
+*  WRITE:/ 'Contains Not Any: False'.
+*ENDIF.
+*
+*
+** Contains pattern--------------------------------------
+**str2 = 'H*'. " Starts with H.
+*str2 = '++l*'.
+*IF str1 CP str2.
+*  WRITE:/ 'Contains Pattern: True'.
+*ELSE.
+*  WRITE:/ 'Contains Pattern: False'.
+*ENDIF.
+*
+** Contains No Pattern-----------------------------------
+*
+*str1 = 'O'.
+*str2 = '++*'. " Ends With H.
+*IF str1 CP str2.
+*  WRITE:/ 'Contains No Pattern: True'.
+*ELSE.
+*  WRITE:/ 'Contains No Pattern: False'.
+*ENDIF.
+*
+*
+** using dynamic where filter-----------------------------
+*DATA test TYPE String VALUE  ` SURNAME CP 'P*' `.
+*LOOP AT tab_name ASSIGNING FIELD-SYMBOL(<fs>) WHERE (test).
+*APPEND <fs> TO wa_test.
+*ENDLOOP.
+*cl_demo_output=>display( wa_test ).
+
+
+*Transporting and comapring.
+*READ TABLE tab_name INTO DATA(wa) WITH KEY name = 'Nirav1' TRANSPORTING NO FIELDS.
+*ASSERT sy-subrc = 4.
+*WRITE 'Assert was not violated'.
+**cl_demo_output=>display( wa ).
+
+
+*sy-index value check
+*FIELD-SYMBOLS <fs> TYPE structure_name.
+*DO 2 TIMES.
+*  READ TABLE tab_name ASSIGNING <fs>  INDEX sy-index.
+*  READ TABLE tab_name ASSIGNING FIELD-SYMBOL(<fs1>)  INDEX sy-index.
+*cl_demo_output=>display( <fs> ).
+* ASSERT <fs>-age = 23.
+*ENDDO.
+*cl_demo_output=>display( <fs> ).
+
+
+*CASTING.
+*TYPES c5 TYPE c LENGTH 2.
+*FIELD-SYMBOLS <fs2> TYPE c5.
+*READ TABLE str_tab ASSIGNING <fs2> CASTING INDEX 1.
+*cl_demo_output=>display( <fs2> ).
+
+*FIELD-SYMBOLS <fs_a> TYPE i.
+*READ TABLE num_tab ASSIGNING <fs_a> CASTING INDEX 1.
+*cl_demo_output=>display( <fs_a> ).
+
+
+*CASTING in select statement.
+* CASTING is now applicable but we have its alternative CAST syntax,
+* but when using where is select with int = char, string. fltp = srting value is matching without problem.
+*DATA value(5) TYPE c VALUE 'Cloth'.
+*SELECT * FROM /bic/azn_rtl12 WHERE CAST( /bic/zn_prdctg AS CHAR( 5 ) ) = @value INTO TABLE @rtl.
+
+
+*cl_demo_output=>display( rtl ).
+
+
+*DATA value TYPE RSDIOBJNM VALUE 'SO_OBJ_FOL'.
+*SELECT * FROM cdpos WHERE objectid = @value INTO TABLE @DATA(rtl).
+*cl_demo_output=>display( rtl ).
+
+*empty key
+*SORT target2 by age DESCENDING.
+*READ TABLE target2 INTO DATA(wa_b) INDEX 1.
+*cl_demo_output=>display( wa_b ).
+
+
+*LOOP START------------------------------------------------------------------------------------------------------------------------------------------
+
+* SELECT ENDSELECT.
+*DATA wa_b TYPE /bic/azn_retail2.
+*DATA itab_retail TYPE TABLE OF /bic/azn_retail2.
+*SELECT * FROM /bic/azn_retail2 INTO wa_b.
+**  APPEND wa_b TO itab_retail.
+*  ENDSELECT.
+*  cl_demo_output=>display( wa_b ).
+
+*loop using key.
+*LOOP AT tab_name INTO DATA(wa_c).
+*APPEND wa_c TO target1.
+*ENDLOOP.
+*cl_demo_output=>display( target1 ).
+
+
+* Loop with specified index range.
+*LOOP AT tab_name INTO DATA(wa_b) FROM 2 TO 3.
+*APPEND wa_b TO target1.
+*ENDLOOP.
+*cl_demo_output=>display( target1 ).
+
+
+*loop using where clause
+*LOOP AT tab_name INTO DATA(wa_c) FROM 5 TO 10 where age > 20 AND age < 28.
+*  APPEND wa_c TO target1.
+*ENDLOOP.
+*cl_demo_output=>display( target1 ).
+
+*inserting into internal table using loop
+
+*DO 100 TIMES.
+*  INSERT VALUE #(  num = sy-index ) INTO TABLE text_num.
+*ENDDO.
+
+
+
+*for loop getting value from 0 - 20 and multiplying it with 2.
+*DATA wa_e TYPE STANDARD TABLE OF no_num.
+*wa_e = VALUE #( FOR wa_f IN num_tab WHERE ( num > 0 AND num < 20 ) ( num = wa_f-num * 2 )   ).
+*cl_demo_output=>display( wa_e ).
+
+*for loop for inseting values (wa_e declared in above code) its okie if we dont declare 'x'.
+*DATA x1  TYPE i.
+*x1 = 1.
+*wa_e = VALUE #( FOR x1 = 1 WHILE x1 <= 10 ( num = x1 )  ).
+*cl_demo_output=>display( wa_e ).
+
+
+
+*inserting value after current processed line.
+*DO 50 TIMES.
+*  text_num = VALUE #( FOR x = 1 WHILE x <= 50 ( text = x ) ) .
+*ENDDO.
+**cl_demo_output=>display( text_num ).
+
+*DO 50 TIMES.
+*  str_tab = VALUE #( FOR x = 1 WHILE x <= 50 ( str = x ) ) .
+*ENDDO.
+
+*LOOP AT text_num ASSIGNING FIELD-SYMBOL(<fs_b>).
+*  DATA(tabix) = sy-tabix.
+*  <fs_b>-num = tabix.
+*  INSERT VALUE #(  text = tabix ) INTO text_num INDEX tabix + 1.
+*  IF tabix = 50.
+*    EXIT.
+*  ENDIF.
+*ENDLOOP.
+*cl_demo_output=>display( text_num ).
+
+* deleting record after current line is processed.(next record delete.)
+*LOOP AT text_num ASSIGNING FIELD-SYMBOL(<fs_c>).
+*tabix = sy-tabix.
+*<fs_c>-num = tabix.
+*DELETE text_num INDEX tabix + 1.
+*ENDLOOP.
+*cl_demo_output=>display( text_num ).
+
+*inserting on previous index
+*LOOP AT text_num ASSIGNING <fs_b>.
+*IF sy-tabix > 1.
+*tabix = sy-tabix.
+*DATA(new_line) = tabix - 1.
+*DATA x1(3) TYPE n.
+*      x1 = new_line.
+*CONCATENATE 'New Line'  x1 INTO DATA(result).
+*INSERT VALUE #( text = result num = new_line )  INTO text_num INDEX new_line.
+*<fs_b>-num = sy-tabix + 2.
+*else.
+*  <fs_b>-num = sy-tabix + 1.
+*ENDIF.
+*ENDLOOP.
+*cl_demo_output=>display( text_num ).
+
+* using refrence into in loop
+*LOOP AT str_tab REFERENCE INTO DATA(wa_g).
+*IF wa_g->* CS '10'.
+*DELETE str_tab INDEX sy-tabix.
+*ENDIF.
+*ENDLOOP.
+*cl_demo_output=>display( str_tab ).
+
+
+*using let key word.
+*DATA lt_date TYPE TABLE OF str_string.
+*LOOP AT date ASSIGNING FIELD-SYMBOL(<fs_c>).
+*DATA(full_date) = conv string( LET a_date = <fs_c> sep = '-' IN <fs_c>-year && sep && <fs_c>-month && sep && <fs_c>-date ).
+*APPEND full_date TO lt_date.
+*ENDLOOP.
+*
+*cl_demo_output=>display( lt_date ).
+
+
+*  corresponding, it will delete the existing reocrds and insert new.
+*target3 = VALUE #( ( name = 'Nirav' surname = 'Patel' age = 21 )
+*                     ( name = 'Pratham' surname = 'Patel' age = 23 ) ).
+*
+*target3 = CORRESPONDING #( target2 ).
+*
+**cl_demo_output=>display( target3 ).
+*target3 = VALUE #( ( name = 'Nirav' surname = 'Patel' age = 21 )
+*                     ( name = 'Pratham' surname = 'Patel' age = 23 ) ).
+*
+**using BASE/KEEPING TARGET LINES, it will preserve the existing records.
+*MOVE-CORRESPONDING target2 TO target3 KEEPING TARGET LINES.
+*cl_demo_output=>display( target3 ).
+
+*MOVE-CORRESPONDING, just alternative for CORRESPONDING.
+*MOVE-CORRESPONDING target2 TO target3 KEEPING TARGET LINES .
+*cl_demo_output=>display( target3 ).
+
+
+* with MAPPING.
+*target4 = CORRESPONDING #( target2 MAPPING person_name = name person_surname = surname ).
+*cl_demo_output=>display( target4 ).
+
+
+** using EXCEPT.
+*target3 = CORRESPONDING #( target2 EXCEPT surname ).
+*cl_demo_output=>display( target3 ).
+
+*CORRESPONDING to non-similar internal table.
+*target3 = CORRESPONDING #( target2 EXCEPT * ).
+*cl_demo_output=>display( target3 ).
+
+*str_tab = CORRESPONDING #( target3 MAPPING str = name ).
+*cl_demo_output=>display( str_tab ).
+
+
+
+**DEEP STRUCTURE.
+*single_date = VALUE #( ( date = 20250624 ) ).
+
+*DATA wa TYPE ty_s_deep_structure.
+
+*wa-ds_date = '20250624'.
+*wa-month_str = 'Jun'.
+*wa-calmonth = '202506'.
+*wa-split_date = VALUE #( ( year = '2025' month = '06' date = '24' ) ).
+*INSERT wa INTO ds_date INDEX 1.
+*
+*wa-ds_date = '20250510'.
+*wa-month_str = 'May'.
+*wa-calmonth = '202505'.
+*wa-split_date = VALUE #( ( year = '2025' month = '05' date = '10' ) ).
+*INSERT wa INTO ds_date INDEX 2.
+*
+*wa-ds_date = '20250421'.
+*wa-month_str = 'Apr'.
+*wa-calmonth = '202504'.
+*wa-split_date = VALUE #( ( year = '2025' month = '04' date = '21' ) ).
+*INSERT wa INTO ds_date INDEX 3.
+*
+*ds_date1 = CORRESPONDING #( ds_date FROM single_date USING date = ds_date ).
+*
+*LOOP AT ds_date1 INTO DATA(wa1).
+*
+*  WRITE: /  sy-tabix , 'Date- ' && wa1-ds_date, 'Calmonth- ' && wa1-calmonth, 'Month_str- ' && wa1-month_str.
+*  LOOP AT wa1-split_date INTO DATA(wa2).
+*    WRITE: / sy-tabix , 'Split Year-' && wa2-year, 'Split Month-' && wa2-month, 'Split Date-' && wa2-date .
+*
+*  ENDLOOP.
+*ENDLOOP.
+
+* ----------------------------------------------------------------- ACCESSING THE DEEP STRUCTURE USING INDEX
+*ds_date = VALUE #( ( ds_date = 20250624
+*                   month_str = 'Jun' calmonth = '202506'
+*                   split_date = VALUE #( ( year = '2025'
+*                                           month = '06'
+*                                           date = '24' )
+*
+*                                         ( year = '2023'
+*                                           month = '11'
+*                                           date = '24' )
+*
+*                                           ( year = '2022'
+*                                           month = '11'
+*                                           date = '24' ) ) )
+*
+*                   ( ds_date = 20240521
+*                   month_str = 'May' calmonth = '202505'
+*                   split_date = VALUE #( ( year = '2024'
+*                                           month = '05'
+*                                           date = '21' ) ) ) ).
+
+*
+*
+*
+*ds_date1 = CORRESPONDING #( DEEP ds_date ).
+*MOVE-CORRESPONDING ds_date TO ds_date1 EXPANDING NESTED TABLES.
+*DATA(d_date) = ds_date1[ 1 ]-split_date[ 3 ]-month.
+*
+*d_date-date = '01'.
+*d_date-month = '11'.
+*d_date-year = '2004'.
+*
+*cl_demo_output=>display( d_date ).
+
+*DATA lv_a TYPE REF TO i.
+*CREATE DATA lv_a.
+**CREATE DATA lv_b TYPE Srting.
+*
+*lv_a = NEW #( 'hello' ).
+*cl_demo_output=>display( lv_a ).
+
+
+** calculating the execution time.
+*DATA itab TYPE TABLE OF /bic/azg_sales2.
+*SELECT * FROM /bic/azg_sales2 INTO TABLE itab.
+*DATA itab1 TYPE TABLE OF /bic/azg_sales2.
+*DATA wa TYPE /bic/azg_sales2.
+*
+*GET RUN TIME FIELD DATA(t1).
+*
+*LOOP AT itab ASSIGNING FIELD-SYMBOL(<fs>).
+*
+*wa-/bic/zg_curcds = <fs>-/bic/zg_curcds.
+*wa-/bic/zg_lnitm = <fs>-/bic/zg_lnitm.
+*wa-/bic/zg_ordnum = <fs>-/bic/zg_ordnum.
+*wa-/bic/zg_qntity = <fs>-/bic/zg_qntity.
+*wa-/bic/zg_slcstm = <fs>-/bic/zg_slcstm.
+*wa-/bic/zg_slprdk = <fs>-/bic/zg_slprdk.
+*wa-/bic/zg_slstrk = <fs>-/bic/zg_slstrk.
+*wa-/bic/zn_delvdt = <fs>-/bic/zn_delvdt.
+*wa-/bic/zn_orddt = <fs>-/bic/zn_orddt.
+*
+*ENDLOOP.
+*
+*GET RUN TIME FIELD DATA(t2).
+*
+*itab1 = CORRESPONDING #( itab ).
+*
+*DATA line1 LIKE LINE OF itab.
+*
+*GET RUN TIME FIELD DATA(t3).
+*DATA: time1 TYPE DECFLOAT34,
+*      time2 TYPE DECFLOAT34.
+*time1 = ( t2 - t1 ) / 1000 .
+*time2 = ( t3 - t2 ) / 1000.
+*cl_demo_output=>display( 'Time for loop to execute ' && ':-' && time1 ).
+*cl_demo_output=>display( 'Time for corresponding to execute' && ':-' && time2 ).
+
+
+*READ TABLE target1 INTO DATA(wa) INDEX 1.
+*FIELD-SYMBOLS <fs> TYPE structure_name.
+*READ TABLE target1 ASSIGNING <fs> INDEX 1.
+*
+*<fs> = VALUE #( BASE <fs>  name = 'kinnari' surname = 'Patel'  ).
+
+*MODIFY TABLE target1 FROM VALUE #( BASE wa name = 'Anjali' surname = 'Patel' ).
+
+*cl_demo_output=>display( target1 ).
+
+
+** loop using group by with 1 field and running loop on grp by..
+*LOOP AT tab_name INTO DATA(wa) GROUP BY ( key = wa-age  gi = GROUP INDEX gs = GROUP SIZE ) INTO DATA(wa1) .
+*LOOP AT GROUP wa1 INTO DATA(wa_wa1).
+*cl_demo_output=>display( wa_wa1 ).
+*cl_demo_output=>display( wa1-gi ).
+*cl_demo_output=>display( wa1-gs ).
+*ENDLOOP.
+*ENDLOOP.
+
+
+** loop using group by with 2 field
+*LOOP AT tab_name INTO DATA(wa2) GROUP BY ( key = wa2-name gi = GROUP INDEX gs = GROUP SIZE ) INTO DATA(wa) .
+*
+*LOOP AT GROUP wa INTO DATA(wa1).
+*cl_demo_output=>display( wa1 ).
+*ENDLOOP.
+*ENDLOOP.
+
+*LOOP AT tab_name INTO DATA(wa4) GROUP BY ( key = wa4-name gi = GROUP INDEX gs = GROUP SIZE ) INTO DATA(key).
+*LOOP AT GROUP key INTO DATA(key3).
+*cl_demo_output=>display( key3 ).
+*ENDLOOP.
+*ENDLOOP.
+*line_index( num_tab ).
+
+
+
+
+*reading with free key and secondary key executiion time.
+
+*############### DONT USE THIS  PIECE OF CODE IT WILL FETCH 300K RECORDS WILL TAKE TIME...........
+*(ofc its my code ik but yess)
+
+*DATA itab TYPE TABLE OF /bic/azn_sptf12 WITH KEY spotify_track_ur ts platform ms_played track_name WITH HEADER LINE.
+*DATA itab_sec TYPE TABLE OF /bic/azn_sptf12 WITH HEADER LINE
+*              WITH NON-UNIQUE KEY ts platform ms_played track_name
+*              WITH NON-UNIQUE SORTED KEY sk COMPONENTS spotify_track_ur.
+*
+*SELECT * FROM /bic/azn_sptf12 INTO TABLE @DATA(itab1) .
+*GET RUN TIME FIELD DATA(t1).
+*SELECT * FROM /bic/azn_sptf12 INTO TABLE @itab_sec PACKAGE SIZE 10000000.
+*
+*  ENdselect.
+*
+* get RUN TIME FIELD DATA(t2).
+*  DATA(no) =   t2 - t1 .
+*  cl_demo_output=>display( no ).
+*DESCRIBE TABLE itab LINES DATA(itab_tabix).
+*cl_demo_output=>display( itab1 ).
+
+
+
+
+* SELECT FROM DATABASE TABLE AND PERFORMING INNER JOIN.----------------------------------------------------
+*SELECT * FROM zemp  AS emp INNER JOIN zemp_salary AS emp_s ON emp~empid =  emp_s~empid INTO TABLE @DATA(it_emp).
+*cl_demo_output=>display( it_emp ).
+
+
+*##################    APPEND  USING VALUES
+*append VALUE #(  ds_date = 20210521
+*                   month_str = 'May' calmonth = '202105'
+*                   split_date = VALUE #( ( year = '2024'
+*                                           month = '05'
+*                                           date = '21' ) ) )  TO ds_date.
+*APPEND INITIAL LINE TO ds_date.
+**DATA(datesss) = ds_date[ 3 ]-split_date.
+**cl_demo_output=>display( datesss ).
+*
+**cl_demo_output=>display( ds_date1 ).
+*
+*   APPEND LINES OF ds_date FROM 1 TO 2 TO ds_date1.
+*   DATA(datesss1) = ds_date1[ 2 ]-split_date.
+*
+*   cl_demo_output=>display( datesss1 ).
+
+*SELECT * FROM /bic/azdn_cnpop2 INTO NEW @DATA(struc_ref_d).
+*  ENDSELECT.
+
+
+
+* STRUCTURE WITH SUB-STRUCTURE ALSO READING AND LOOPING ON IT. ######################
+*TYPES: BEGIN OF student,
+*         BEGIN OF stud_per,
+*           name(20)        TYPE c,
+*           surname(10)     TYPE c,
+*           father_name(20) TYPE c,
+*           mother_name(10) TYPE c,
+*         END OF stud_per,
+*         BEGIN OF stud_det,
+*           enrol(15)  TYPE n,
+*           depart(10) TYPE c,
+*           branch(10) TYPE c,
+*           div(1)     TYPE c,
+*           sem(1)     TYPE n,
+*         END OF stud_det,
+*       END OF student.
+*
+*TYPES ty_t_student TYPE TABLE OF  student WITH NON-UNIQUE KEY stud_det-enrol.
+*DATA itab2 TYPE TABLE OF student-stud_det.
+*DATA itab3 TYPE TABLE OF student-stud_per.
+*
+*DATA itab TYPE ty_t_student.
+*
+*itab = VALUE #( ( stud_per-name = 'Will' stud_per-surname = 'Byers' stud_per-father_name = 'Jhonathan' stud_per-mother_name = 'Nancy'
+*                  stud_det-enrol = 202103103510301 stud_det-depart = 'Hawkins' stud_det-branch = 'AV Club' stud_det-div = 'A' stud_det-sem = 1 )
+*
+*                  ( stud_per-name = 'Mike' stud_per-surname = 'Wheeler' stud_per-father_name = 'Dave' stud_per-mother_name = 'Carol'
+*                  stud_det-enrol = 202103103510302 stud_det-depart = 'Hawkins' stud_det-branch = 'AV Club' stud_det-div = 'A' stud_det-sem = 1 )
+*
+*                  ( stud_per-name = 'Lukas' stud_per-surname = 'Sinclair' stud_per-father_name = 'dk' stud_per-mother_name = 'w***'
+*                  stud_det-enrol = 202103103510303 stud_det-depart = 'Hawkins' stud_det-branch = 'AV Club' stud_det-div = 'A' stud_det-sem = 1 )
+*
+*                  ( stud_per-name = 'Dustin' stud_per-surname = 'Henderson' stud_per-father_name = 'Unknown' stud_per-mother_name = 'DK'
+*                  stud_det-enrol = 202103103510304 stud_det-depart = 'Hawkins' stud_det-branch = 'AV Club' stud_det-div = 'A' stud_det-sem = 1 )
+*
+*                  ( stud_per-name = 'Eleven(Jane)' stud_per-surname = 'Hopper' stud_per-father_name = 'Jim' stud_per-mother_name = 'Unknown'
+*                  stud_det-enrol = 202103103510305 stud_det-depart = 'Hawkins' stud_det-branch = 'AV Club' stud_det-div = 'A' stud_det-sem = 1 )
+*
+*                  ( stud_per-name = 'Steve' stud_per-surname = 'Harington' stud_per-father_name = 'DK' stud_per-mother_name = 'unknown'
+*                  stud_det-enrol = 202103103510306 stud_det-depart = 'Hawkins' stud_det-branch = 'AV Club' stud_det-div = 'A' stud_det-sem = 1 )
+*
+*                  ( stud_per-name = 'Max' stud_per-surname = 'Hargrove' stud_per-father_name = 'DK' stud_per-mother_name = 'DK'
+*                  stud_det-enrol = 202103103510307 stud_det-depart = 'Hawkins' stud_det-branch = 'AV Club' stud_det-div = 'A' stud_det-sem = 1 )
+*                   ).
+
+*cl_demo_output=>display( itab[ 1 ]-stud_per ).
+
+*DESCRIBE TABLE itab LINES DATA(itab_lines).
+
+*cl_demo_output=>display( itab_lines ).
+
+*LOOP AT itab INTO DATA(wa).
+*APPEND wa-stud_det TO itab2.
+*APPEND wa-stud_per TO itab3.
+*ENDLOOP.
+*cl_demo_output=>Display( itab2 ).
+*cl_demo_output=>Display( itab3 ).
+
+*READ TABLE itab INTO DATA(wa) INDEX 3.
+*cl_demo_output=>display( wa-stud_per ).
+
+**--------------------: DATE FUCNTION.

@@ -1,0 +1,879 @@
+*&---------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*& Report ZNIRAV
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT znirav.
+* creating constant and seeing the error when changing constant.
+*CONSTANTS cnst TYPE String VALUE 'immutable'.
+**cnst = 'hello'.
+
+
+* creating custom type
+TYPES: String_5(5)   TYPE c,
+       String_20(20) TYPE c.
+
+*structure declaration.
+TYPES: BEGIN OF str_string,
+         str TYPE String_20,
+       END OF str_string.
+
+TYPES: BEGIN OF no_num,
+         num  TYPE i,
+         text TYPE c,
+       END OF no_num.
+
+TYPES: BEGIN OF txt_num,
+         text   TYPE String,
+         num(3) TYPE n,
+       END OF txt_num.
+
+TYPES: BEGIN OF structure_name,
+         name    TYPE String_20,
+         surname TYPE String_20,
+         age     TYPE i.
+         INCLUDE TYPE str_string.
+TYPES:
+       END OF structure_name.
+
+DATA number TYPE no_num.
+
+
+
+* tables types declaration.
+TYPES: itab      TYPE SORTED TABLE OF structure_name WITH UNIQUE KEY primary_key COMPONENTS name,
+       itab_h    TYPE HASHED TABLE OF structure_name WITH UNIQUE KEY primary_key COMPONENTS name,
+       itab_std  TYPE STANDARD TABLE OF structure_name,
+       itab_std1 TYPE STANDARD TABLE OF structure_name WITH EMPTY KEY.
+
+
+* table declaration.
+*DATA str_tab TYPE SORTED TABLE OF str_string WITH NON-UNIQUE KEY str.
+DATA num_tab TYPE SORTED TABLE OF no_num WITH NON-UNIQUE KEY num.
+DATA tabname TYPE itab.
+DATA tab_name1 TYPE itab_std.
+DATA target1 TYPE itab.
+DATA target2 TYPE itab_std.
+DATA text_num TYPE TABLE OF txt_num.
+
+*FIELD-SYMBOLS <fs> TYPE SORTED TABLE.
+*str_tab = VALUE #( ( str = 'hello')
+*                   ( str = 'Nirav') ).
+*num_tab = VALUE #( ( num = 100 text = 'N' )
+*                   ( num = 200 text = 'I' ) ).
+*ASSIGN str_tab TO <fs>.
+*
+*cl_demo_output=>display( <fs> ).
+*
+*ASSIGN num_tab TO <fs>.
+*
+*cl_demo_output=>display( <fs> ).
+
+
+
+
+
+* work area declaration. 7646956
+*DATA: wa_test TYPE itab_std.
+*
+**  value initialization for tab_name.
+*tabname = VALUE #( ( name = 'Nirav' surname = 'Patel' age = 30  )
+*                     ( name = 'Nirav1' surname = 'Mishra1' age = 29 )
+*                     ( name = 'Nirav2' surname = 'Mishra2' age = 29 )
+*                     ( name = 'Nirav3' surname = 'Mishra3' age = 29 )
+*                     ( name = 'Nirav4' surname = 'Patel4' age = 26 )
+*                     ( name = 'Nirav5' surname = 'Mishra5' age = 25 )
+*                     ( name = 'Nirav6' surname = 'Mishra6' age = 24 )
+*                     ( name = 'Nirav7' surname = 'Mishra7' age = 29 )
+*                     ( name = 'Nirav8' surname = 'Patel8' age = 22 )
+*                     ( name = 'Nirav9' surname = 'Mishra9' age = 29 )
+*                     ( name = 'Nirav10' surname = 'Mishra10' age = 29 )
+*                     ( name = 'Nirav11' surname = 'Mishra11' age = 31 ) ).
+*
+*
+*str_tab = VALUE #( ( str = 'NIRAV PATEL' ) ).
+*num_tab = VALUE #( ( num = 81282824 ) ).
+*
+*target2 = VALUE #( ( name = 'Nirav' surname = 'Patel' age = 20  )
+*                     ( name = 'Nirav' surname = 'Mishra1' age = 21  )
+*                     ( name = 'Nirav2' surname = 'Mishra2' age = 22  )
+*                     ( name = 'Nirav3' surname = 'Mishra3' age = 23  )  ).
+
+
+*using select on internal table
+*select * FROM @target2 as tgt INTO TABLE @DATA(wa).,
+*cl_demo_output=>display( wa ).
+*DATA i_age TYPE i VALUE 29.
+**WHERE age = CAST( age AS CHAR )
+
+*  select CAST( age as CHAR ) FROM @tabname as tb INTO TABLE @DATA(wa1).
+
+*  tabname = CORRESPONDING #( wa1  ).
+* cl_demo_output=>display( tabname ).
+
+
+
+TYPES: BEGIN OF ty_s_emp,
+         empid(10)          TYPE n,
+         emp_first_name(25) TYPE c,
+         emp_last_name(25)  TYPE c,
+         emp_contact_no(8)  TYPE n,
+         emp_email(20)      TYPE c,
+         emp_pos(20)        TYPE c,
+       END OF ty_s_emp.
+
+
+*------------------------------ CREATING ONE STRUCTURE AND SELECT TO FEED VALUE IN IT.
+DATA empp TYPE TABLE OF zemp.
+DATA zempp TYPE zemp.
+*
+*       SELECT SINGLE * FROM zemp WHERE emp_no = 812828 INTO @empp.
+*         DATA(full_name) = empp-emp_first_name.
+*         cl_demo_output=>display( full_name ).
+
+*TYPES: BEGIN OF ty_s_emp_salary,
+*         empid(10)  TYPE n,
+*         emp_salary TYPE i,
+*       END OF ty_s_emp_salary.
+*
+*TYPES: BEGIN OF ty_s_emps,
+*         empid(10)          TYPE n,
+*         emp_first_name(25) TYPE c,
+*         emp_last_name(25)  TYPE c,
+*         emp_contact_no(8)  TYPE n,
+*         emp_email(20)      TYPE c,
+*         emp_pos(20)        TYPE c,
+*       END OF ty_s_emps.
+
+*-------------------------------------------GENERIC STRUCTURE WHICH CAN BE ASSIGN TO ANY.
+*ASSIGN ('demo_stru') TO FIELD-SYMBOL(<fs>).
+*
+**DATA(some_comp) = `Name`.
+*
+*DATA(stru) = empp.
+*stru = VALUE #( empid = 2021079999 emp_first_name = 'XYZ' emp_last_name = 'Patel'
+*                            emp_no = 812828 emp_email = 'ZYZ@gmail.com' emp_pos = 'CEO' ).
+
+
+*-------------------------------------------INSERT USING WORKAREA.
+*  INSERT INTO zemp VALUES stru.
+*cl_demo_output=>display( stru ).
+*
+**-------------------------------------------USING BASE IN VALUE#.
+
+*stru = VALUE #(  BASE stru empid = 2021073001 ).
+**stru-emp_first_name = 'parth'.
+*cl_demo_output=>display( stru ).
+*
+**-------------------------------------------CORRESPONDING WITH STRUCTURES (WORKAREAS)
+
+*SELECT SINGLE * FROM zemp WHERE empid = 2021072701  INTO @empp .
+*MOVE-CORRESPONDING empp TO zempp.
+*cl_demo_output=>display( zempp ).
+*
+***-------------------------------------------CORRESPONDING WITH STRUCTURES (WORKAREAS) USING BASE.
+*
+*SELECT SINGLE * FROM zemp WHERE empid = 2021079999 INTO @empp.
+**MOVE-CORRESPONDING empp TO zempp.
+*zempp = CORRESPONDING #( BASE ( zempp ) empp ).
+*cl_demo_output=>display( zempp ).
+
+***------------------------------------------ UPDATE, MODIFY, DELETE INTO DATABASE TABLE USING WORKAREA.
+*UPDATE ZEMP FROM @stru.
+*MODIFY ZEMP FROM @stru.
+*DELETE ZEMP FROM @stru.
+
+*-------------------------------------------GENERIC FIELD SYMBOL WHICH CAN BE ASSIGN TO ANY.
+*FIELD-SYMBOLS <fs> TYPE  data.
+
+*ASSIGN empp-empid TO <fs>.
+*ASSIGN empp-emp_no TO <fs>.
+*ASSIGN empp-emp_first_name TO <fs>.
+*ASSIGN empp-emp_last_name TO <fs>.
+*<fs> = 2021073000.
+* cl_demo_output=>display( <fs> ).
+*<fs> = 812828.
+* cl_demo_output=>display( <fs> ).
+*<fs> = 'Patel'.
+*SELECT * FROM zemp INTO empp.
+*  ENDSELECT.
+*ASSIGN empp TO <fs>.
+* cl_demo_output=>display( <fs> ).
+
+
+*-------------------------------------------TABLE DECLARATION
+*DATA emp TYPE SORTED TABLE OF ty_s_emps WITH UNIQUE KEY empid.
+*DATA emp_salary TYPE SORTED TABLE OF ty_s_emp_salary WITH UNIQUE KEY empid.
+*DATA emp_s TYPE SORTED TABLE OF ty_s_emps WITH UNIQUE KEY empid.
+
+
+
+**-------------------------------------------ONLY FOR INSERTING DATA.
+*DATA emp_salary1 TYPE SORTED TABLE OF ty_s_emp_salary WITH UNIQUE KEY empid.
+*DATA wa TYPE ty_s_emp_salary.
+*DATA emp_salary2 TYPE SORTED TABLE OF ty_s_emp_salary WITH UNIQUE KEY empid.
+
+*wa-empid = 2021034508.
+*wa-emp_salary = 12000.
+*
+*MODIFY zemp_salary FROM wa.
+
+*emp_salary = VALUE #( ( empid = 2021030001 emp_salary = 10000 ) ) .
+*emp_salary2 = VALUE #( ( empid = 2021030000 emp_salary = 11000 ) ) .
+
+
+** *-------------------------------------------inserting from internal table one
+*INSERT LINES OF emp_salary INTO TABLE emp_salary1.
+*cl_demo_output=>display( emp_salary1 ).
+
+**inserting on specific index
+*INSERT LINES OF emp_salary2  INTO emp_salary1 INDEX 1 .
+*cl_demo_output=>display( emp_salary1 ).
+
+
+
+*SELECT * FROM zemp INTO TABLE @DATA(emp1).
+*emp = CORRESPONDING  #( emp1 MAPPING empid = empid
+*                                     emp_first_name = emp_first_name
+*                                     emp_last_name = emp_last_name
+*                                     emp_contact_no =  emp_no
+*                                     emp_email = emp_email
+*                                     emp_pos = emp_pos ).
+*SELECT * FROM zemp_salary INTO TABLE emp_salary.
+
+*INNER JOIN TIMINGS----------------------------------------------------------------------------------------------------------------------------------
+*GET RUN TIME FIELD DATA(t1).
+*SELECT * FROM @emp AS e
+* INNER JOIN zemp_salary AS es ON e~empid = es~empid INTO TABLE @DATA(it_emp).
+*GET RUN TIME FIELD DATA(t2).
+*DATA diff(10) TYPE n.
+*diff =  t2 - t1.
+*diff = diff / 1000.
+*CONCATENATE 'Inner Join Time:-' diff INTO DATA(Inner_join).
+*cl_demo_output=>display( it_emp ).
+
+
+
+*CROSS JOIN TIMINGS----------------------------------------------------------------------------------------------------------------------------------
+*GET RUN TIME FIELD DATA(t3).
+*SELECT * FROM zemp AS e
+* CROSS JOIN  zemp_salary AS es INTO TABLE @DATA(it_emp1).
+*GET RUN TIME FIELD DATA(t4).
+*DATA diff1(10) TYPE n.
+*diff1 =  t4 - t3 .
+*diff1 = diff1 / 1000.
+*CONCATENATE 'Cross Join Time:-' diff1 INTO DATA(Cross_join).
+*cl_demo_output=>display( it_emp1 ).
+
+
+
+*LEFT JOIN TIMINGS----------------------------------------------------------------------------------------------------------------------------------
+*GET RUN TIME FIELD DATA(t5).
+*SELECT * FROM zemp AS e
+* LEFT JOIN  zemp_salary AS es ON e~empid = es~empid INTO TABLE @DATA(it_emp3).
+*GET RUN TIME FIELD DATA(t6).
+*DATA diff2(10) TYPE n .
+*diff2 =  t6 - t5 .
+*diff2 = diff2 / 1000.
+*CONCATENATE 'Left Join Time:-' diff2 INTO DATA(Left_join).
+*cl_demo_output=>display( it_emp3 ).
+
+*LOOP AT emp1 INTO DATA(wa1).
+*
+*ENDLOOP.
+
+
+
+*RIGTH JOIN TIMINGS----------------------------------------------------------------------------------------------------------------------------------
+*GET RUN TIME FIELD DATA(t7).
+*SELECT * FROM zemp AS e
+* RIGHT JOIN  zemp_salary AS es ON e~empid = es~empid INTO TABLE @DATA(it_emp4).
+*GET RUN TIME FIELD DATA(t8).
+*DATA diff3(10) TYPE n .
+*diff3 =  t8 - t7.
+*diff3 = diff3 / 1000.
+*CONCATENATE 'Right Join Time:-' diff3 INTO DATA(Right_join).
+*cl_demo_output=>display( it_emp4 ).
+
+
+
+*CORRESPONDING TIMINGS-------------------------------------------------------------------------------------------------------------------------------
+*DATA corr TYPE TABLE OF ty_s_emp.
+*GET RUN TIME FIELD DATA(t9).
+*emp_s = CORRESPONDING #( emp FROM emp_salary USING empid = empid ).
+*GET RUN TIME FIELD DATA(t10).
+*DATA diff4(10) TYPE n .
+*diff4 =  t10 - t9.
+*diff4 = diff4 / 1000.
+*CONCATENATE 'Corresponding Time:-' diff4 INTO DATA(Corresponding).
+*cl_demo_output=>display( emp_s ).
+
+
+*####### ALL JOIN AND THEIR TIMINGS.
+*WRITE / Inner_join.
+*WRITE / Cross_join.
+*WRITE / Left_join.
+*WRITE / Right_join.
+*WRITE / Corresponding.
+
+
+*   WITH expression
+*WITH +it_emp as ( select * FROM zemp AS it_emp WHERE empid > 2021072700 AND empid < 2021073702 ),
+*     +it_emps as ( select * FROM zemp_salary AS it_emps2 WHERE empid > 2021071701 AND empid < 2021074702 )
+*
+*    SELECT * FROM +it_emp INNER JOIN +it_emps ON +it_emp~empid = +it_emps~empid INTO TABLE @DATA(first_half).
+*    cl_demo_output=>display( first_half ).
+
+*DATA emp TYPE SORTED TABLE OF ty_s_emp WITH UNIQUE KEY empid.
+*DATA emp1 TYPE SORTED TABLE OF ty_s_emp WITH UNIQUE KEY empid.
+*DATA emp_salary TYPE SORTED TABLE OF ty_s_emp_salary WITH UNIQUE KEY empid.
+*DATA emp_s TYPE SORTED TABLE OF ty_s_emps WITH UNIQUE KEY PRIMARY_KEY COMPONENTS empid.
+*
+*SELECT * FROM zemp INTO TABLE emp_s.
+*SELECT * FROM zemp_salary INTO TABLE emp_salary.
+*SELECT * FROM zemp INTO TABLE emp1 WHERE empid < 2021078000 AND empid > 2021071000.
+*DATA lt_emp1 like emp_s.
+*
+** ------------------- FILTER ----------------------------------
+*
+*DATA emp_id(10) TYPE n VALUE '2021073000'.
+
+*-------------------------------USING WHERE CONDITION-------------------------------
+*emp_s = FILTER #( emp_s WHERE empid < emp_id  ).
+*cl_demo_output=>display( emp_s ).
+
+*------------------------------- USING EXCEPT WITH WHERE CONDITION -------------------------------
+*emp_s = FILTER #( emp_s EXCEPT WHERE empid < emp_id  ).
+*cl_demo_output=>display( emp_s ).
+
+*------------------------------- USING KEY WITH  WHERE CONDITION -------------------------------
+*emp_s = FILTER #( emp_s USING KEY primary_key WHERE empid = emp_id ).
+*cl_demo_output=>display( emp_s ).
+
+
+*------------------------------- USING FILTER USING IN -------------------------------
+
+*emp_s = FILTER #( emp_s IN emp1 WHERE empid = empid ).
+*cl_demo_output=>display( emp_s ).
+
+*emp_s = FILTER #( emp_s EXCEPT IN emp1 WHERE empid = empid ).
+*cl_demo_output=>display( emp_s ).
+
+
+
+
+*----------------------CORRESPONDING.
+*lt_emp1 = CORRESPONDING #( emp_s FROM emp_salary USING KEY primary_key empid = empid ).
+*cl_demo_output=>display( lt_emp1 ).
+
+*SELECT carrid, connid, cityfrom, cityto
+*       FROM @itab AS tab
+*       ORDER BY carrid, connid
+*       INTO TABLE @DATA(flights).
+
+
+*DATA(stable_flight) = flights[].
+*DATA(sort_flight) = flights[].
+*
+*SORT stable_flight STABLE BY carrid connid.
+*SORT sort_flight STABLE BY carrid connid.
+*
+*cl_demo_output=>display( flights ).
+*cl_demo_output=>display( stable_flight ).
+*cl_demo_output=>display( sort_flight ).
+
+
+
+*###RANDOM CALCULATION'..
+*DATA num_of_loops TYPE i VALUE 60.
+*DATA percent TYPE i.
+*DATA g_percent TYPE i VALUE 25.
+*DATA multiplier TYPE p DECIMALS 3 VALUE '1.4'.
+*DATA cap TYPE i VALUE 100.
+*DATA div TYPE i VALUE 100.
+*DATA extra TYPE i.
+*DATA count TYPE i VALUE  0.
+*
+*TYPES: BEGIN OF int_tab,
+*         total TYPE i,
+*       END OF int_tab.
+
+*DATA total_cap TYPE TABLE OF int_tab.
+*DATA wa TYPE int_tab.
+
+*DO  num_of_loops TIMES.
+
+*  IF count = 0 AND cap >= 3000.
+
+*    cap = cap - 2000.
+*  percent = ( cap / div ) * g_percent.
+*  cap = cap - percent.
+*  percent = percent *  multiplier.
+*  cap = cap + percent.
+*  wa-total = cap.
+*  APPEND wa TO total_cap.
+*  count = 1.
+
+*ENDIF.
+
+*percent = ( cap / div ) * g_percent.
+*  cap = cap - percent.
+*  percent = percent *  multiplier.
+*  cap = cap + percent.
+*  wa-total = cap.
+*  APPEND wa TO total_cap.
+*ENDDO.
+
+*DO num_of_loops TIMES.
+*wa-total = cap * multiplier.
+*cap = wa-total.
+*APPEND wa TO total_cap.
+*ENDDO.
+
+*cl_demo_output=>display( total_cap ).
+*cl_demo_output=>display( count ).
+
+
+*TYPES: BEGIN OF demo_flights,
+*         carrid   TYPE c LENGTH 3,
+*         connid   TYPE n LENGTH 4,
+*         cityfrom TYPE c LENGTH 20,
+*         cityto   TYPE c LENGTH 20,
+*       END OF demo_flights,
+*       ty_flights TYPE TABLE OF demo_flights WITH DEFAULT KEY.
+*
+*       TYPES: BEGIN OF demo_flights1,
+*         carrid   TYPE c LENGTH 3,
+*         connid   TYPE n LENGTH 4,
+*         from TYPE c LENGTH 20,
+*         to   TYPE c LENGTH 20,
+*       END OF demo_flights1.
+*       ty_flights TYPE TABLE OF demo_flights1 WITH DEFAULT KEY.
+
+*DATA lt_flights1 TYPE TABLE OF demo_flights.
+*DATA lt_flights2 TYPE TABLE OF demo_flights1.
+*DATA itab TYPE TABLE OF demo_flights.
+*DATA wa TYPE demo_flights.
+*
+*      itab = VALUE #( ( carrid = 'AZ' connid = '0555' cityfrom = 'ROME' cityto = 'FRANKFURT' )
+*                      ( carrid = 'LH' connid = '2407' cityfrom = 'BERLIN' cityto = 'FRANKFURT' )
+*                      ( carrid = 'AZ' connid = '0788' cityfrom = 'ROME' cityto = 'TOKYO' )
+*                      ( carrid = 'AZ' connid = '0789' cityfrom = 'TOKYO' cityto = 'ROME' )
+*                      ( carrid = 'UA' connid = '3517' cityfrom = 'FRANKFURT' cityto = 'NEW YORK' )
+*                      ( carrid = 'LH' connid = '2402' cityfrom = 'FRANKFURT' cityto = 'BERLIN' )
+*                      ( carrid = 'DL' connid = '1699' cityfrom = 'NEW YORK' cityto = 'SAN FRANCISCO' )
+*                      ( carrid = 'UA' connid = '3516' cityfrom = 'NEW YORK' cityto = 'FRANKFURT' )
+*                      ( carrid = 'DL' connid = '1984' cityfrom = 'SAN FRANCISCO' cityto = 'NEW YORK' )
+*                      ( carrid = 'QF' connid = '0005' cityfrom = 'SINGAPORE' cityto = 'FRANKFURT' )
+*                      ( carrid = 'JL' connid = '0408' cityfrom = 'FRANKFURT' cityto = 'TOKYO' )
+*                      ( carrid = 'LH' connid = '0400' cityfrom = 'FRANKFURT' cityto = 'NEW YORK' )
+*                      ( carrid = 'SQ' connid = '0988' cityfrom = 'SINGAPORE' cityto = 'TOKYO' )
+*                      ( carrid = 'LH' connid = '0402' cityfrom = 'FRANKFURT' cityto = 'NEW YORK' )
+*                      ( carrid = 'AZ' connid = '0790' cityfrom = 'ROME' cityto = 'OSAKA' )
+*                      ( carrid = 'JL' connid = '0407' cityfrom = 'TOKYO' cityto = 'FRANKFURT' )
+*                      ( carrid = 'QF' connid = '0006' cityfrom = 'FRANKFURT' cityto = 'SINGAPORE' )
+*                      ( carrid = 'AA' connid = '0064' cityfrom = 'SAN FRANCISCO' cityto = 'NEW YORK' )
+*                      ( carrid = 'AA' connid = '0017' cityfrom = 'NEW YORK' cityto = 'SAN FRANCISCO' )
+*                      ( carrid = 'UA' connid = '3504' cityfrom = 'SAN FRANCISCO' cityto = 'FRANKFURT' )
+*                      ( carrid = 'DL' connid = '0106' cityfrom = 'NEW YORK' cityto = 'FRANKFURT' ) ).
+
+*lt_flights2 = CORRESPONDING #( itab MAPPING from = cityfrom to = cityto ).
+*lt_flights2 = CORRESPONDING #( itab  EXCEPT* ).
+
+*cl_demo_output=>display( lt_flights2  ).
+*SORT itab.
+*cl_demo_output=>display( itab ).
+*lt_flights1 = VALUE #( ( carrid = 'AZ' connid = '0555' cityfrom = 'ROME' cityto = 'FRANKFURT' )
+*( carrid = 'AZ' connid = '0555' cityfrom = 'ROME' cityto = 'FRANKFURT' ) ).
+*READ TABLE itab INTO wa INDEX 5.
+*wa-cityto = 'Antalia'.
+*
+*
+*MODIFY lt_flights1 FROM wa  INDEX wa.
+*cl_demo_output=>display( lt_flights1 ).
+
+*DATA str_tab1 TYPE TABLE OF string WITH EMPTY KEY.
+*
+*str_tab1 = VALUE #( ( str = 'Hello' ) ( str = 'Hellcat' ) ( str = 'San Fransisco' ) ( str = 'PC Hardware' ) ).
+*
+*
+*FIND ALL OCCURRENCES OF 'S' IN str_tab RESULTS DATA(res_data) RESPECTING CASE.
+
+*DATA lt_range TYPE RANGE OF string.
+**
+*lt_range = VALUE #( sign = 'I'
+*             option = 'EQ' ( low = 'SAN FRANCISCO' )
+*             ).
+*
+*select * FROM @itab as it WHERE cityfrom IN @lt_range INTO TABLE @DATA(itab2).
+*  cl_demo_output=>display( itab2 ).
+
+*  DATA lt_range TYPE RANGE OF string.
+**
+*lt_range = VALUE #( sign = 'I'
+*             option = 'EQ' ( low = '0555' )
+*             ).
+*
+*select * FROM @itab as it WHERE connid IN @lt_range INTO TABLE @DATA(itab2).
+*  cl_demo_output=>display( itab2 ).
+
+*TYPEs base_type TYPE i.
+*TYPES: BEGIN OF ENUM ty_s_enum STRUCTURE _ty_s_enum BASE TYPE base_type,
+*  north VALUE IS INITIAL ,
+*  south VALUE 10,
+*  west VALUE 11,
+*  east VALUE 14,
+*  END OF enum ty_s_enum STRUCTURE _ty_s_enum .
+*
+*
+*  DATA(enum) = _ty_s_enum-west.
+**  DATA(conv_enum) = CONV base_type( _ty_s_enum ).
+*  cl_demo_output=>display( enum ).
+
+
+
+*------------------------------------------------------- CONSTANTS --------------------------------------------
+
+*CONSTANTS: BEGIN OF location,
+*  north(6) TYPE c VALUE '10.342' ,
+*  south(6) TYPE c VALUE '0.123' ,
+*  east(6) TYPE c VALUE '11.453' ,
+*  west(6) TYPE c VALUE '-1.242' ,
+*END OF location.
+
+*location-north = '11'.
+*cl_demo_output=>display( north1 ).
+
+*------------------------------------------------------- Calculator using parameter --------------------------------------------
+*DATA: a TYPE i,
+*      b TYPE i.
+*
+*DATA sum TYPE i.
+*DATA sub TYPE i.
+*DATA mul TYPE i.
+*DATA div TYPE i.
+*PARAMETERS: operand1  TYPE i,
+*            operand2  TYPE i,
+*            operator(1) TYPE c.
+*
+*a = operand1.
+*b = operand2.
+*IF operator = '+'.
+*  sum = a + b.
+*  WRITE :/ 'summation is :' && sum.
+*
+*ELSEIF operator = '/'.
+*  div = a / b.
+*  WRITE :/ 'DIVISION is :' && div.
+*
+*ELSEIF operator = '-'.
+*  sub = a - b.
+*  WRITE :/ 'substraction is :' && sub.
+*
+*ELSEIF operator = '*'.
+*  mul = a * b.
+*  WRITE :/ 'multiplication is :' && mul.
+*ENDIF.
+
+
+**------------------------------------------------------- INCLUDING STRUCTURE.
+*
+*TYPES: BEGIN OF personal,
+*         name(10)    TYPE c,
+*         surname(10) TYPE c,
+*       END OF personal,
+*       BEGIN OF work,
+*         position(10) TYPE c,
+*         salary       TYPE i,
+*       END OF work,
+*       BEGIN OF stud,
+*         stud_name(30) TYPE c,
+*         enroll_no(10) TYPE n,
+*         cgpa          TYPE p DECIMALS 2,
+*       END OF stud.
+*
+*TYPES BEGIN OF per_info.
+*INCLUDE TYPE personal AS _per .
+*INCLUDE TYPE work AS _work.
+*INCLUDE TYPE stud AS _stud .
+*TYPES END OF per_info.
+*
+*DATA itab TYPE TABLE OF per_info.
+*DATA wa1 TYPE per_info.
+*wa1 = VALUE #( _per = VALUE #( name = 'Nirav' Surname = 'Patel' ) _work = VALUE #( position = 'Consultant' salary = 120000 )
+*                _stud = VALUE #( stud_name = 'Nirav Jashubhai Patel' enroll_no = 2021070001 cgpa = '9.99' ) ).
+*
+*APPEND wa1 TO itab .
+**itab[ 1 ]-cgpa_stud_info = '9.99'.
+*DATA(wa) = itab[ 1 ]-_stud-cgpa.
+*cl_demo_output=>display( wa ).
+
+* -----------------------------------------------------------------: UPDATING THE DEEP STRUCTURE.
+*
+*TYPES: BEGIN OF ty_s_dates,
+*         year(4)  TYPE c,
+*         month(2) TYPE c,
+*         date(2)  TYPE c,
+*       END OF ty_s_dates.
+*
+*TYPES: ty_t_dates TYPE TABLE OF ty_s_dates WITH NON-UNIQUE DEFAULT KEY.
+**DATA split_dt TYPE TABLE OF ty_s_dates WITH HEADER LINE.
+*
+**  deep structure declaration.
+*TYPES: BEGIN OF ty_s_deep_structure,
+*         ds_date      TYPE d,
+*         calmonth(6)  TYPE n,
+*         month_str(3) TYPE c,
+*         split_date   TYPE ty_s_dates BOXED ,
+*       END OF ty_s_deep_structure.
+*
+*TYPES: ty_t_ds_stru   TYPE TABLE OF ty_s_deep_structure .
+*DATA: ds_date     TYPE ty_t_ds_stru,
+*      ds_date1 TYPE ty_t_ds_stru.
+
+***-----------------: RECORD 1
+**ds_date-calmonth ='202509'.
+**ds_date-ds_date = '20250906'.
+**ds_date-month_str = 'Sept'.
+**ds_date-split_date-date = '06'.
+**ds_date-split_date-month = '09'.
+**ds_date-split_date-year = '2004'.
+**APPEND ds_date TO ds_date.
+**
+***-----------------: RECORD 2
+**
+**ds_date-calmonth ='202506'.
+**ds_date-ds_date = '20250624'.
+**ds_date-month_str = 'Jun'.
+**ds_date-split_date-date = '24'.
+**ds_date-split_date-month = '11'.
+**ds_date-split_date-year = '2023'.
+**APPEND ds_date TO ds_date.
+**
+***-----------------: RECORD 3
+**
+**ds_date-calmonth ='202502'.
+**ds_date-ds_date = '20250210'.
+**ds_date-month_str = 'Feb'.
+**ds_date-split_date-date = '10'.
+**ds_date-split_date-month = '02'.
+**ds_date-split_date-year = '2025'.
+**APPEND ds_date TO ds_date.
+
+
+
+*SELECT * FROM @ds_date- AS s_date INTO TABLE @DATA(itab).
+
+*DATA(d_date) = ds_date[ 3 ].
+
+*d_date-date = '01'.
+*d_date-month = '11'.
+*d_date-year = '2004'.
+
+*cl_demo_output=>display( d_date ).
+
+
+* -----------------------------------------------------------------: ABAP SQL.
+
+*----------------: SELECT WITH DATASOURCE NAME USIND  TILDE ' ~ '
+
+*SELECT zemp~*, zemp_salary~* FROM zemp INNER JOIN zemp_salary ON zemp~empid = zemp_salary~empid INTO TABLE @DATA(lt) WHERE zemp~empid = 2021073000.
+*  cl_demo_output=>display( lt ).
+
+*----------------: SELECT WITH ~* AND ALIAS ' AS '
+*  SELECT FROM zemp FIELDS zemp~* , emp_first_name AS fname INTO TABLE @DATA(lt1).
+*      cl_demo_output=>display( lt1 ).
+
+
+**----------------: SELECT (CORRESPONDING FIELDS INTO..)
+*DATA emp_salary TYPE TABLE OF zemp_salary.
+*DATA emp TYPE TABLE OF zemp.
+*
+**SELECT * FROM ZEMP WHERE empid <> '' INTO CORRESPONDING FIELDS OF TABLE @emp_salary.
+**  cl_demo_output=>display( emp_salary ).
+*
+*
+**----------------: SELECT ( APPENDING CORRESPONDING FIELDS INTO..)
+*  SELECT * FROM ZEMP WHERE empid <> '' APPENDING CORRESPONDING FIELDS OF TABLE @emp_salary.
+*  cl_demo_output=>display( emp_salary ).
+*
+**----------------: SELECT ( APPENDING TABLE..)
+*  SELECT * FROM ZEMP WHERE empid <> '' APPENDING TABLE @emp.
+*  cl_demo_output=>display( emp ).
+
+***----------------: SELECT FROM CDS VIEW
+*SELECT * FROM ZVCDS_PM INTO TABLE @DATA(prdt).
+*  cl_demo_output=>display( prdt ).
+
+***----------------: SELECTING INDIVIDUAL COMPONENT
+*SELECT SINGLE empid, emp_pos FROM zemp INTO ( @DATA(empid), @DATA(emp_pos) ).
+*  cl_demo_output=>display( empid ).
+
+
+***----------------: SELECTING ABAP TRUE TO CHECK THAT RECORD EXISTS.
+*SELECT SINGLE @abap_true FROM zEMP WHERE EMPID <> 2021072000 INTO @DATA(exists).
+*  IF  exists  = abap_true.
+*cl_demo_output=>display( 'hello' ).
+*  ENDIF.
+
+
+***----------------: SELECT DISTINCT FROM.
+*TYPES: BEGIN OF demo_flights,
+*         carrid   TYPE c LENGTH 3,
+*         connid   TYPE n LENGTH 4,
+*         cityfrom TYPE c LENGTH 20,
+*         cityto   TYPE c LENGTH 20,
+*         ticket TYPE i,
+*       END OF demo_flights,
+*       ty_flights TYPE TABLE OF demo_flights.
+*       DATA itab TYPE ty_flights.
+
+*itab = VALUE #( ( carrid = 'AZ' connid = '0555' cityfrom = 'ROME' cityto = 'FRANKFURT' ticket = 100 )
+*                      ( carrid = 'LH' connid = '2407' cityfrom = 'BERLIN' cityto = 'FRANKFURT' ticket = 200 )
+*                      ( carrid = 'AZ' connid = '0788' cityfrom = 'FRANKFURT' cityto = 'TOKYO' ticket = 160 )
+*                      ( carrid = 'AZ' connid = '0789' cityfrom = 'TOKYO' cityto = 'ROME' ticket = 220 )
+*                      ( carrid = 'AZ' connid = '0789' cityfrom = 'TOKYO' cityto = 'ROME' ticket = 360 )
+*                      ( carrid = 'AZ' connid = '0789' cityfrom = 'TOKYO' cityto = 'ROME' ticket = 450 )
+*                      ( carrid = 'AZ' connid = '0789' cityfrom = 'TOKYO' cityto = 'ROME' ticket = 1280 )
+*                      ( carrid = 'UA' connid = '3517' cityfrom = 'FRANKFURT' cityto = 'NEW YORK' ticket = 135 )
+*                      ( carrid = 'LH' connid = '2402' cityfrom = 'FRANKFURT' cityto = 'BERLIN' ticket = 375 ) ).
+*
+*SELECT DISTINCT * FROM @itab as itab WHERE cityfrom = 'TOKYO' INTO TABLE @DATA(flights).
+*cl_demo_output=>display( flights ).
+
+***----------------: SELECT UP TO 'X' ROWS.
+*SELECT * FROM zemp INTO TABLE @DATA(itab1) UP TO 10 ROWS.
+*cl_demo_output=>display( itab1 ).
+
+***----------------: OFFSET.
+*SELECT * FROM zemp_salary ORDER BY empsalary DESCENDING  INTO TABLE @DATA(ITAB2) OFFSET 2  UP TO 10 ROWS.
+*cl_demo_output=>display( itab2 ).
+
+***----------------: GROUP BY.
+*SELECT cityfrom, sum( ticket ) AS tkt FROM @ITAB AS ITAB GROUP BY cityfrom INTO TABLE @DATA(ITAB3).
+*cl_demo_output=>display( itab3 ).
+
+
+*SELECT FROM zemp FIELDS empid, 'Nirav' AS Name ,emp_last_name , char`X` AS flaf WHERE empid > 2021070000 AND empid < 2021071000 INTO TABLE @DATA(itab4).
+*cl_demo_output=>display( itab4 ).
+
+
+***----------------: SELECT GROUP BY WITH HAVING.
+*SELECT modelyear, max( displacement ) AS CC FROM zautomobile GROUP BY modelyear HAVING modelyear > 75 INTO TABLE @DATA(itab5).
+*cl_demo_output=>display( itab5 ).
+
+*----------------:FOR ALL ENTRIES IN.
+*SELECT carname FROM zautomobile INTO TABLE @DATA(itab6) UP TO 40 ROWS.
+
+*SELECT * FROM zautomobile FOR ALL ENTRIES IN @itab6 WHERE carname = @ITAB6-carnamE INTO TABLE @DATA(itab7).
+*cl_demo_output=>display( itab7 ).
+
+*----------------: WHERE EXIST. (if where condition exist it will bring the records as per the main query not as per sub query selection)
+*SELECT * FROM zautomobile WHERE EXISTS ( SELECT *  FROM zautomobile_year WHERE modelfyear > 1970 )  INTO TABLE @DATA(itab8).
+*cl_demo_output=>display( itab8 ).
+
+*----------------:  UNION.
+
+*SELECT carname, cylinder, DISPLACEMENT, hp, weight, acceleration, modelyear, mielage FROM zautomobile_1
+*  UNION
+*  SELECT carname, cylinder, DISPLACEMENT, hp, weight, acceleration, modelyear, mielage FROM zautomobile_2 INTO TABLE @DATA(ITAB9).
+*
+*cl_demo_output=>display( itab9 ).
+
+
+*----------------:  INTERSECTION.
+*SELECT CARNAME, CYLINDER, HP, DISPLACEMENT FROM zautomobile
+*  INTERSECT
+*  SELECT CARNAME, CYLINDER, HP, DISPLACEMENT FROM zautomobile_1 INTO TABLE @DATA(ITAB10).
+*  cl_demo_output=>display( itab10 ).
+
+**----------------: EXCEPT IN SUB-QUERY.
+*SELECT CARNAME, CYLINDER, HP, DISPLACEMENT  FROM zautomobile
+*  EXCEPT ( SELECT CARNAME, CYLINDER, HP, DISPLACEMENT FROM zautomobile_1 ) ORDER BY CARNAME
+*  INTO TABLE @DATA(ITAB11).
+*  cl_demo_output=>display( itab11 ).
+
+
+**----------------: CTE (COMMON TABLE EXPRESSION)
+*WITH
+*+FIRSTHALF
+*          AS
+*            ( SELECT * FROM zautomobile_1 WHERE WEIGHT > 1500 ),
+*+SECONDHALF
+*          AS
+*            ( SELECT * FROM  zautomobile_2 WHERE WEIGHT > 1500 )
+*
+*  SELECT CARNAME, HP, DISPLACEMENT FROM +firsthalf
+*    UNION
+*  SELECT CARNAME, HP, DISPLACEMENT FROM +SECONDHALF ORDER BY CARNAME INTO TABLE @DATA(ITAB12).
+*cl_demo_output=>display( itab12 ).
+
+**----------------: ANY, ALL, SOME
+*SELECT * FROM zautomobile WHERE WEIGHT = ALL ( SELECT WEIGHT FROM zautomobile WHERE WEIGHT > 2000 ) INTO TABLE @DATA(ITAB13).
+*  cl_demo_output=>display( itab13 ).
+*
+*SELECT * FROM zautomobile WHERE WEIGHT = ANY ( SELECT WEIGHT FROM zautomobile WHERE WEIGHT > 2000 ) INTO TABLE @DATA(ITAB14).
+*  cl_demo_output=>display( itab14 ).
+*
+*  SELECT * FROM zautomobile WHERE WEIGHT = SOME ( SELECT WEIGHT FROM zautomobile WHERE WEIGHT > 2000 ) INTO TABLE @DATA(ITAB15).
+*  cl_demo_output=>display( itab15 ).
+
+
+***----------------: DATE FUNCTIONS.
+*SELECT STOREKEY, COUNTRY, STATE, ADD_MONTHS( ADD_DAYS( opendate, 3 ) , 5 ) AS OPNDT FROM znstore INTO TABLE @DATA(ITAB17).
+*  CL_DEMO_OUTPUT=>DISPLAY( ITAB17 ).
+
+
+***----------------: UPDATE  USING SET.
+*  UPDATE zbin SET X10 = 'Nirav'.
+*  SELECT * FROM zbin INTO TABLE  @DATA(itab19).
+*    cl_demo_output=>display( itab19 ).
+
+
+*DATA wa TYPE TABLE OF zemp_salary.
+**UPDATE ZEMP_SALARY SET EMPSALARY = 12345 WHERE EMPID = 2021073000.
+*SELECT SINGLE * FROM ZEMP_SALARY WHERE EMPID = '2021073100' INTO @DATA(WA1).
+*  cl_demo_output=>display( WA1 ).
+
+
+**----------------: INSERT USING INTERNAL TABLE.
+TYPES: BEGIN OF emp_sal,
+  emp_id(10) TYPE n,
+  emp_salary TYPE i,
+  END OF emp_sal.
+*
+  DATA itab20 TYPE TABLE OF emp_sal.
+*
+*  itab20 = VALUE #( ( emp_id = '2021079995' emp_salary = 12345 )
+*                    ( emp_id = '2021079996' emp_salary = 12346 )
+*                    ( emp_id = '2021079997' emp_salary = 12347 )
+*                    ( emp_id = '2021079998' emp_salary = 12348 )
+*                    ( emp_id = '2021079999' emp_salary = 12349 ) ).
+
+
+*------------- DO NOT EXECUTE WITHOUT CHANGING ABOVE RECORDS ELSE IT WILL RAISE AN ERROR FOR DUPLICATE RECORDS
+*  INSERT zemp_salary FROM TABLE @itab20.
+
+
+*  SELECT * FROM zemp_salary WHERE empid >= '2021079995' AND empid <= '2021079999' INTO TABLE @DATA(itab21).
+*  cl_demo_output=>display( itab21 ).
+
+
+**----------------: INSERT USING SUBQUERY.
+
+*----- IF U RUN THIS LINE BELOW MAKE SURE TO DELETE THE TABLE RECORDS FROM IT.
+*INSERT ZEMPP_SAL FROM ( SELECT * FROM ZEMP_SALARY ).
+*SELECT * FROM ZEMPP_SAL INTO TABLE @DATA(ITAB22).
+*  CL_DEMO_OUTPUT=>DISPLAY( ITAB22 ).
+
+
+
+**----------------: DELETING USING INTERNAL TABLE AND CORRESPONDING.
+
+*INSERT zempp_sal FROM TABLE @( CORRESPONDING #( itab22 ) ).
+
+
+UPDATE zempp_sal FROM @( VALUE #( empid = '2021079995' empsalary = 95 ) ).
+SELECT SINGLE * FROM zempp_sal INTO @DATA(wa2) WHERE empid = '2021079995'.
+  cl_demo_output=>display( wa2 ).
