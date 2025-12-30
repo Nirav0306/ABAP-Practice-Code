@@ -1,0 +1,291 @@
+**&---------------------------------------------------------------------*
+**& Report ZNIRAV_OOP_ABAP
+**&---------------------------------------------------------------------*
+**&
+**&---------------------------------------------------------------------*
+REPORT znirav_oop_abap.
+** CLASS HAS 2 SECTION ONE DECLERATION PART OTHER IMPLEMENTATION, IN IT CLASS HAS 3 SECTIONS PUBLIC, PRIVATE, PROTECTED SECTION
+** BUT CLASS SHOULD HAVE ATLEAST ONE SECTION DEFINED.
+*
+**   THIS IS CLASS DEFINATION PART ANY METHOD, DATA MEMBERS CONSTANTS ARE DECLEARED HERE.
+*CLASS myClass DEFINITION.
+*
+**  THIS IS PUBLIC SECTION MEANING IT WILL CREATE GLOBAL CLASS, FOLLOWING THIS WE ALSO HAVE PRIVATE, PROTECTED.
+*  PUBLIC SECTION.
+*
+*
+**  VARIABLES DEFINED WITH "CLASS-DATA"  ARE STATIC DATA MEMBERS WHICH CAN BE CALLED BY INSTANCE OR CLASS.
+*    class-DATA :name TYPE string,
+*     surname TYPE String.
+*
+*
+**  VARIABLES DEFINED WITH "DATA"  ARE INSTANCE DATA MEMBERS WHICH CAN BE CALLED ONLY BY INSTANCE.
+*    DATA x TYPE bool.
+*
+*
+**   METHODS DECLARED BY "METHODS" ARE INSTANCE METHOD WHICH CAN ONLY CALLED BY INSTANCE.
+**   OBJECT IS REFFERED AS INSTANCE.
+*    METHODS Fetch_Name
+*      IMPORTING get_name TYPE string
+*      EXPORTING set_name TYPE string.
+*
+*
+**    METHODS DECLARED BY "CLASS-METHODS" ARE STATIC METHOD WHICH CAN BE CALLED BY CLASS NAME AND INSTANCE BOTH.
+*    CLASS-METHODS Fetch_Surname
+*      IMPORTING get_surname TYPE string
+*      CHANGING  full_name   TYPE string.
+*
+*ENDCLASS.
+*
+*
+*
+** CLASS ALSO HAVE IMPLEMENTATION SECTION, WHICH IS ONLY REQUIRED IF WE HAVE DECLARED METHODS IN DEFINITION PART, ELSE ITS FINE TO OMIT IT.
+*CLASS myclass IMPLEMENTATION.
+*  METHOD Fetch_Name.
+*    name = get_name.
+*    set_name = name.
+*  ENDMETHOD.
+*
+*  METHOD fetch_surname.
+*    surname = get_surname.
+*   CONCATENATE  name surname INTO  full_name SEPARATED BY space.
+*   full_name = 'Name'.
+*    ENDMETHOD.
+*ENDCLASS.
+*
+*
+** "START-OF-SELECTION WHICH IS EXECUTED AFTER USER INPUT"
+*START-OF-SELECTION.
+** LOCAL VARIABLES.
+*  DATA myname TYPE string.
+*
+**  OBJECT DECLEARTION (WE DIDN'T CREATE IT, IT'S JUST DECLARED IF WE WANT TO USE THIS OBJECT CREATE IT WITH IT'S RESPECTIVE CLASS ) .
+*  DATA myObj TYPE REF TO myclass.
+*
+**  OBJECT CREATION.
+*  myobj = NEW #( ).
+*
+**  INSTANCE METHOD CALLING
+*  myobj->Fetch_Name(
+*  EXPORTING get_name = 'Nirav'
+*  IMPORTING set_name = myname ).
+*
+**  STATIC METHOD CALLING
+*  myclass=>fetch_surname( EXPORTING get_surname = 'Patel'
+*                          CHANGING full_name = myname ).
+*
+*  WRITE:/ myname.
+
+
+**&---------------------------------------------------------------------*
+**& OPTIONAL AND DEFAULT PARAMETERS.
+**&---------------------------------------------------------------------*
+**&
+**&---------------------------------------------------------------------*
+
+*  OPTIONAL PARAMETERS ARE OPTIONAL IF NOT PASSED IT WILL BE INITIAL AND WHEN DEFAULT VALUE IS GIVEN, IF VALUE IS NOT PASSED IT WILL JUST USE DEFAULT VALUE
+
+*CLASS opt_Def_parameters DEFINITION.
+*
+*  PUBLIC SECTION.
+*
+**  METHOD DECLARED WITH OPTIONAL AND DEFAULT PARAMETER.
+*    METHODS sumation
+*      IMPORTING num1 TYPE i OPTIONAL
+*                num2 TYPE i OPTIONAL
+*                num3 TYPE i DEFAULT 10.
+*
+*ENDCLASS.
+*
+*
+*CLASS opt_def_parameters IMPLEMENTATION.
+*
+*  METHOD sumation.
+*
+**   "IS SUPPLIED" IT WILL JUST CHECK IF THE PARAMETER IS PASSED.IF IT IS IT WILL RETURN TURE ELSE FALSE.
+*    IF num1 IS SUPPLIED.
+*      WRITE: / |Num1 is supplied { num1 } |.
+*    ELSE.
+*      WRITE: / |Num1 is not supplied|.
+*    ENDIF.
+*    IF num2 IS SUPPLIED.
+*      WRITE: / |Num2 is supplied { num2 } |.
+*    ELSE.
+*      WRITE: / |Num2 is not supplied|.
+*    ENDIF.
+*    IF num3 IS NOT INITIAL.
+*      WRITE: / |Num3 is Not Initial, it contains default, value is { num3 } |.
+*    ELSE.
+*      WRITE: / |Num3 is inital / not supplied|.
+*    ENDIF.
+*  ENDMETHOD.
+*ENDCLASS.
+
+*START-OF-SELECTION.
+
+*  DATA myobj1 TYPE REF TO opt_def_parameters.
+*  myobj1 = NEW #( ).
+
+*  myobj1->sumation( NUM1 = 999 ).
+
+
+
+**&---------------------------------------------------------------------*
+**& PREFERRED PARAMETERS.
+**&---------------------------------------------------------------------*
+**&
+**&---------------------------------------------------------------------*
+
+*   WHEN WE HAVE MULTIPLE OPTIONAL PARAMETERS AND WE PASS THE PARAMETER VALUE WITHOUT SPECIFYING THE FORMAL PARAMETER NAME THEN IT WILL PASS THE VALUE TO
+*   PREFERRED PARAMETER ( IF GIVEN ELSE IT WILL RAISE ERROR ASKING TO PROVIDE FORMAL PARAMETER NAME) .
+
+*CLASS preferred_parameter DEFINITION.
+*  PUBLIC SECTION.
+*
+**  HERE WE HAVE PREFERRED PARAMETER IS NUM3 SO IF WE DON'T GIVE NAME FORMAL PARAMETER NAME THEN IT WILL PASS THE GIVEN VALUE IN NUM3.
+*    METHODS pref_Params
+*      IMPORTING num1 TYPE i OPTIONAL
+*                num2 TYPE i OPTIONAL
+*                num3 TYPE i OPTIONAL
+*                  PREFERRED PARAMETER num3.
+*ENDCLASS.
+*
+*CLASS preferred_parameter IMPLEMENTATION.
+*
+*  METHOD pref_params.
+*    IF num1 IS SUPPLIED.
+*      WRITE: / |Num1 is supplied { num1 } |.
+*    ELSE.
+*      WRITE: / |Num1 is not supplied|.
+*    ENDIF.
+*    IF num2 IS SUPPLIED.
+*      WRITE: / |Num2 is supplied { num2 } |.
+*    ELSE.
+*      WRITE: / |Num2 is not supplied|.
+*    ENDIF.
+*    IF num3 IS SUPPLIED.
+*      WRITE: / |Num3 is Supplied { num3 } |.
+*    ELSE.
+*      WRITE: / |Num3 is not supplied|.
+*    ENDIF.
+*  ENDMETHOD.
+*ENDCLASS.
+*
+*START-OF-SELECTION.
+*
+**  THIS IS OBJECT DECLERATION AND THEN CREATION IN SECOND LINE.
+**  DATA  myobj3  TYPE REF TO preferred_parameter.
+**  myobj3 = NEW #( ).
+*
+** THIS IS INLINE OBJECT DELECRATION AND CREATION.
+*  DATA(myobj3) = NEW preferred_parameter( ).
+*
+***  HERE I'VE PASSED VALUE WITHOUT GIVING FORMAL PARAMETER NAME SO IT WILL JUST ASSIGN THE VALUE 100 TO PREFERRED.
+*  myobj3->pref_params( 100 ).
+
+
+
+
+**&---------------------------------------------------------------------*
+**& Constructor.
+**&---------------------------------------------------------------------*
+**&
+**&---------------------------------------------------------------------*
+
+* Constructor is just special method which is called automatically upon creating object of its respective class( same concept of java ).
+* Now 
+CLASS Demo_Constructor DEFINITION.
+  METHOD
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**&---------------------------------------------------------------------*
+**& Inheritance.
+**&---------------------------------------------------------------------*
+**&
+**&---------------------------------------------------------------------*
+*
+*
+*CLASS myclass DEFINITION CREATE PUBLIC.
+*  PUBLIC SECTION.
+*    METHODS meth1.
+*    METHODS meth2.
+*ENDCLASS.
+*
+*CLASS myclass IMPLEMENTATION.
+*
+*  METHOD meth1.
+*    WRITE:/ ' This is Meth1 '.
+*  ENDMETHOD.
+*
+*  METHOD meth2.
+*    WRITE:/ ' This is Meth2 '.
+*  ENDMETHOD.
+*
+*ENDCLASS.
+*
+*CLASS myclass2 DEFINITION INHERITING FROM myclass.
+*  PUBLIC SECTION.
+*    METHODS meth3.
+*ENDCLASS.
+*
+*CLASS myclass2 IMPLEMENTATION.
+*  METHOD meth3.
+*write:' Hello '.
+*
+*  ENDMETHOD.
+*ENDCLASS.
+*
+*START-OF-SELECTION.
+*DATA(obj2) = new myclass2( ).
+*
+** HERE WE HAVE CALLED "Meth1" USING CHILD CLASS OBJECT.
+*write:/ 'This meth1 was called using child class object'.
+*obj2->meth1( ).
