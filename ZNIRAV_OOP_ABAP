@@ -192,56 +192,52 @@ REPORT znirav_oop_abap.
 **&
 **&---------------------------------------------------------------------*
 
-* Constructor is just special method which is called automatically upon creating object of its respective class( same concept of java ).
-* Now 
-CLASS Demo_Constructor DEFINITION.
-  METHOD
+*-------------------------- DEFINITION ---------------------------------*
+
+* CONSTRUCTOR IS JUST SPECIAL METHOD WHICH IS CALLED AUTOMATICALLY UPON CREATING OBJECT OF ITS RESPECTIVE CLASS( SAME CONCEPT OF JAVA ).
+* NOW CONSTRUCTOR ARE OF 2 TYPES, STATIC AND INSTANCE. THERE CAN ONLY BE ONE STATIC AND INSTANCE CONSTRUCTOR THROUGHOUT THE CLASS.
+* CONSTRUCTOR NAMES ARE FIXED, INSTANCE CONSTRUCTOR IS NAME "constructor" and static constructor is named "class_constructor".
+* SO THIS WAY IT IS IDENTIFIED IN COMPARE WITH OTHER METHODS.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+*CLASS Demo_Constructor DEFINITION.
+*  PUBLIC SECTION.
+*
+**  THIS IS INSTANCE CONSTRUCTOR IS DECLARED USING "METHODS" WHICH CAN ONLY BE DEFINED IN PUBLIC SECTION, AND IT WILL CALLED UPON CREATING OBJECT,
+**  IF CREATED 3 OBJECT IT WILL BE CALLED 3 TIMES
+**  IT CAN HAVE IMPORTING PARAMETERS AND RAISE EXCEPTIONS.
+*    METHODS constructor.
+*
+** STATIC CONSTRUCTORS ARE DECLARED WITH "CLASS-METHODS", it will only be called when calling the class first time or any instance is created firsttime.
+*    CLASS-METHODS class_constructor.
+*    CLASS-METHODS test_meth.
+*
+*ENDCLASS.
+*
+*
+*CLASS demo_constructor IMPLEMENTATION.
+*  METHOD test_meth.
+*    WRITE:/ 'hello this is test method' .
+*  ENDMETHOD.
+*  METHOD constructor.
+*    WRITE:/' Object Created and static constructor is called automatically '.
+*  ENDMETHOD.
+*
+*  METHOD class_constructor.
+*    WRITE:/'Instance constructor'.
+*  ENDMETHOD.
+*
+*ENDCLASS.
+*
+*START-OF-SELECTION.
+*
+**   LIKE HERE WHEN "test_meth" IS CALLED II WILL CALL STATIC COUSTRUCTOR BECAUSE IS BEING SED THE CLASS HERE.
+*  demo_constructor=>test_meth( ).
+*
+**  AND HERE I'VE CREATED 3 OBJECT SO INSTANCE CONSTRUCTOR IS BEING CALLED 3 TIMES.
+*  DATA(obj) = NEW demo_constructor( ).
+*  DATA(obj1) = NEW demo_constructor( ).
+*  DATA(obj2) = NEW demo_constructor( ).
 
 
 
