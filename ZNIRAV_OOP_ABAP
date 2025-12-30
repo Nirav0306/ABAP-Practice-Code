@@ -247,8 +247,9 @@ REPORT znirav_oop_abap.
 **&---------------------------------------------------------------------*
 **&
 **&---------------------------------------------------------------------*
-*
-*
+
+
+
 *CLASS myclass DEFINITION CREATE PUBLIC.
 *  PUBLIC SECTION.
 *    METHODS meth1.
@@ -285,3 +286,39 @@ REPORT znirav_oop_abap.
 ** HERE WE HAVE CALLED "Meth1" USING CHILD CLASS OBJECT.
 *write:/ 'This meth1 was called using child class object'.
 *obj2->meth1( ).
+
+
+
+
+**&---------------------------------------------------------------------*
+**& Interface.
+**&---------------------------------------------------------------------*
+**&
+**&---------------------------------------------------------------------*
+
+
+INTERFACE itrf.
+  METHODS area IMPORTING len TYPE i
+                         brth TYPE i.
+  ENDINTERFACE.
+
+  CLASS myclass3 DEFINITION.
+    PUBLIC SECTION.
+    DATA: C_len TYPE i,
+          C_brth type i,
+          c_area TYPE i.
+    INTERFACES itrf.
+  ENDCLASS.
+
+  CLASS myclass3 IMPLEMENTATION.
+   METHOD itrf~area.
+     c_len = len.
+     c_brth = brth.
+     c_area = c_len * c_brth.
+     WRITE:/ c_area .
+     ENDMETHOD.
+    ENDCLASS.
+
+    START-OF-SELECTION.
+    DATA(obj4) = NEW myclass3( ).
+    obj4->itrf~area( len = 10 brth = 20 ).
