@@ -248,7 +248,12 @@ REPORT znirav_oop_abap.
 **&
 **&---------------------------------------------------------------------*
 
+** inheritance IS IMPLEMENTED BY "INHERITING FROM class_name", BY INHERITING THE PARENT CLASS CHILD CAN ACCESS ALL ITS METHODS BUT ALSO,
+** IT CAN REDEFINE THE METHODS.
 
+
+**--------------------MyClass-----------------------*
+** "myclass1" NORMAL CLASS USED AS PARENT CLASS FURTHER.
 
 *CLASS myclass DEFINITION CREATE PUBLIC.
 *  PUBLIC SECTION.
@@ -268,6 +273,9 @@ REPORT znirav_oop_abap.
 *
 *ENDCLASS.
 *
+**--------------------MyClass2-----------------------*
+** "myclass2" IS USED AS CHILD CLASS WHICH IS INHERITING "myclass".
+
 *CLASS myclass2 DEFINITION INHERITING FROM myclass.
 *  PUBLIC SECTION.
 *    METHODS meth3.
@@ -288,6 +296,43 @@ REPORT znirav_oop_abap.
 *obj2->meth1( ).
 
 
+**----------------------------------------------------------------------------------------------------------------*
+**-----------------------------------------------Method Reefinition-----------------------------------------------*
+**----------------------------------------------------------------------------------------------------------------*
+*
+**--------------------Parent Class-----------------------*
+*CLASS parent_class DEFINITION.
+*  PUBLIC SECTION.
+*    METHODS meth4.
+*    METHODS meth5.
+*ENDCLASS.
+*
+*CLASS parent_class IMPLEMENTATION.
+*  METHOD meth4.
+*    WRITE:/ 'this is meth4'.
+*  ENDMETHOD.
+*  METHOD meth5.
+*    WRITE:/ 'this is meth5'.
+*  ENDMETHOD.
+*ENDCLASS.
+*
+*
+**--------------------Child Class-----------------------*
+*CLASS child_class DEFINITION INHERITING FROM parent_class.
+*  PUBLIC SECTION.
+*  METHODS meth5 REDEFINITION.
+*ENDCLASS.
+*
+*CLASS child_class IMPLEMENTATION.
+*METHOD meth5.
+*  super->meth5( ).
+*  write:/'This is redefined meth5 called from child class'.
+*ENDMETHOD.
+*ENDCLASS.
+*
+*START-OF-SELECTION.
+*DATA(c_obj) = NEW child_class( ).
+*c_obj->meth5( ).
 
 
 **&---------------------------------------------------------------------*
@@ -296,29 +341,91 @@ REPORT znirav_oop_abap.
 **&
 **&---------------------------------------------------------------------*
 
+* INTERFACE IS DEFINED USINF "INTERFACE","ENDINTERFACE", YOU CAN DEFINE ALL CLASS OBJECT EXCEPT CONSTRUCTOR,
+* ONE CLASS CAN IMPLEMENT MULTIPLE INTERFACE. CLASS MUCT USE ALL THE METHODS OF IMPLEMENTED "INTERFACE", UNLESS IT FLAGGED.
+* INTERFACE CAN BE IMPLEMENTED IN OTHER INTERFACE.
 
-INTERFACE itrf.
-  METHODS area IMPORTING len TYPE i
-                         brth TYPE i.
-  ENDINTERFACE.
+*INTERFACE itrf.
+*  METHODS Rectangle_area IMPORTING len  TYPE i
+*                                   brth TYPE i.
+*ENDINTERFACE.
+*
+*INTERFACE itrf2.
+*  INTERFACES itrf.
+*  METHODS Area IMPORTING side_len TYPE i OPTIONAL
+*                         height   TYPE i OPTIONAL
+*                         pie      TYPE decfloat OPTIONAL
+*                         circum   TYPE i OPTIONAL
+*                         radius   TYPE i OPTIONAL.
+*ENDINTERFACE.
 
-  CLASS myclass3 DEFINITION.
-    PUBLIC SECTION.
-    DATA: C_len TYPE i,
-          C_brth type i,
-          c_area TYPE i.
-    INTERFACES itrf.
-  ENDCLASS.
 
-  CLASS myclass3 IMPLEMENTATION.
-   METHOD itrf~area.
-     c_len = len.
-     c_brth = brth.
-     c_area = c_len * c_brth.
-     WRITE:/ c_area .
-     ENDMETHOD.
-    ENDCLASS.
+*--------------------MyClass3-----------------------*
+*IN "myclass3" IS A SIMPLE EXAMPLE, ONLY ONE INTERFACE IS IMPLEMENTED IN CLASS.
 
-    START-OF-SELECTION.
-    DATA(obj4) = NEW myclass3( ).
-    obj4->itrf~area( len = 10 brth = 20 ).
+
+*  CLASS myclass3 DEFINITION.
+*    PUBLIC SECTION.
+*    DATA: C_len TYPE i,
+*          C_brth type i,
+*          c_area TYPE i.
+*    INTERFACES itrf.
+*  ENDCLASS.
+*
+*  CLASS myclass3 IMPLEMENTATION.
+*   METHOD itrf~Rectangle_area.
+*     c_len = len.
+*     c_brth = brth.
+*     c_area = c_len * c_brth.
+*     WRITE:/ c_area .
+*     ENDMETHOD.
+*    ENDCLASS.
+
+*--------------------MyClass4-----------------------*
+* IN "myclass4" THERE ARE 2 INTERFACES AND INTERFACE "itrf" IS IMPLEMENTED IN OTHER INTERFACE "itrf2".
+
+*CLASS myclass4 DEFINITION.
+*  PUBLIC SECTION.
+*    INTERFACES itrf2.
+*
+**    HERE "ALIASES alias_name FOR method_name" IS USED TO GIVE ALIASE NAME FOR THAT INTERFACE METHOD.
+*    ALIASES rect_ar FOR itrf~rectangle_area.
+*
+*    DATA c2_area TYPE i.
+*
+*ENDCLASS.
+*
+*CLASS myclass4 IMPLEMENTATION.
+**  ALIAS NAME "rect_ar".
+*  METHOD rect_ar.
+*    c2_area = len * brth.
+*    WRITE:/ | Area of Rectangle is: { c2_area } |.
+*  ENDMETHOD.
+*  METHOD itrf2~area.
+*    IF side_len IS NOT INITIAL.
+*      c2_area =  side_len * side_len.
+*      WRITE:/ | Area of Square is: { c2_area } |.
+*    ENDIF.
+*
+*    IF pie IS NOT INITIAL.
+*      c2_area = pie * radius * radius.
+*      WRITE:/ | Area of circle is: { c2_area } |.
+*    ENDIF.
+*
+*    itrf~rectangle_area( len = 10 brth = 20 ).
+*
+*  ENDMETHOD.
+*ENDCLASS.
+*
+*
+*
+**--------------------START OF SELECFTION-----------------------*
+*START-OF-SELECTION.
+*
+**--------------------MyClass3-----------------------*
+**    DATA(obj4) = NEW myclass3( ).
+**    obj4->itrf~Rectangle_area( len = 10 brth = 20 ).
+*
+**--------------------MyClass4-----------------------*
+*DATA(obj5) = NEW myclass4( ).
+*obj5->itrf2~area( pie = '3.14' side_len = 10 height = 10 radius = 5  ).
