@@ -429,3 +429,130 @@ REPORT znirav_oop_abap.
 **--------------------MyClass4-----------------------*
 *DATA(obj5) = NEW myclass4( ).
 *obj5->itrf2~area( pie = '3.14' side_len = 10 height = 10 radius = 5  ).
+
+
+
+
+**-----------------------Abstract Method-------------------------*
+* WE CAN HAVE ABSTRACT METHOD WHICH CAN ONLY BE IMPLEMENTED BY CHILD CLASS, ITS IMPLEMENTATION IS NOT IN IT'S OWN CLASS.
+* ABSTRACT METHOD CAN BE IMPLEMENTED USING "ABSTRACT METHODS" KEYWORD AND CLASS IS IMPLEMENTED BY "ABSTRACT" KEYWORD WHILE DEFINING.
+
+*INTERFACE itrf3.
+*  METHODS: meth4,
+*           meth5.
+*ENDINTERFACE.
+*
+*CLASS myclass5 DEFINITION ABSTRACT.
+*  PUBLIC SECTION.
+*    INTERFACES itrf3 ABSTRACT METHODS meth4.
+*ENDCLASS.
+*
+*
+***-----------------------myclass5 ( Parent Class )-------------------------*
+*CLASS myclass5 IMPLEMENTATION.
+*  METHOD itrf3~meth5.
+*    WRITE:/ ' Hello this is Method 5 '.
+*  ENDMETHOD.
+*ENDCLASS.
+*
+*
+***-----------------------myclass6 ( Child Class )-------------------------*
+*CLASS myclass6 DEFINITION INHERITING FROM myclass5.
+*  PUBLIC SECTION.
+*    METHODS itrf3~meth4 REDEFINITION.
+*    METHODS itrf3~meth5 REDEFINITION.
+*ENDCLASS.
+*
+*CLASS myclass6 IMPLEMENTATION.
+*  METHOD itrf3~meth4.
+*    WRITE:/ ' Hello this is Method 4 called from child class of "myclass5" '.
+*  ENDMETHOD.
+*
+*  METHOD itrf3~meth5.
+*    super->itrf3~meth5( ).
+*    WRITE:/ ' Hello this is redefined Method 5 called from child class of "myclass5" '.
+*  ENDMETHOD.
+*
+*ENDCLASS.
+*
+*START-OF-SELECTION.
+*  DATA(myobj5) = NEW myclass6( ).
+*  myobj5->itrf3~meth4( ).
+*  myobj5->itrf3~meth5( ).
+
+
+
+**-----------------------Final Method-------------------------*
+
+*  FINAL METHODS CANNOT BE REDEFINED IN SUBCLASSES, TO CREATE FINAL METHOD USE "FINAL METHODS" WHILE IMPLEMENTING INTERFACE.
+*  FOR CLASS METHODS WHILE DEFINING METHOD USE "FINAL".
+
+*INTERFACE itrf4.
+*  METHODS meth6.
+*  METHODS meth7.
+*ENDINTERFACE.
+*
+*CLASS myclass7 DEFINITION.
+*  PUBLIC SECTION.
+*    INTERFACES itrf4 FINAL METHODS meth6.
+*    METHODS meth8 FINAL.
+*ENDCLASS.
+*
+*CLASS myclass7 IMPLEMENTATION.
+*  METHOD itrf4~meth6.
+*    WRITE:/ ' Hello This is Method 6 ' .
+*  ENDMETHOD.
+*  METHOD itrf4~meth7.
+*    WRITE:/ ' Hello This is Method 7 ' .
+*  ENDMETHOD.
+*  METHOD meth8.
+*    WRITE:/ ' Hello This is Method 8 ' .
+*  ENDMETHOD.
+*ENDCLASS.
+*
+*CLASS myclass8 DEFINITION INHERITING FROM myclass7.
+*  PUBLIC SECTION.
+**  IF YOU EXECUTE THIS NEXT LINE IT WILL RAISE AN ERROR "meth6" CANNOT BE REDEFINED.
+**  METHODS itrf4~meth6 REDEFINITION.
+*    METHODS itrf4~meth7 REDEFINITION.
+*ENDCLASS.
+*CLASS myclass8 IMPLEMENTATION.
+*  METHOD itrf4~meth7.
+*    WRITE:/' Hello This is method7 '.
+*  ENDMETHOD.
+*ENDCLASS.
+
+*START-OF-SELECTION.
+*data(myobj6) = NEW myclass8( ).
+*myobj6->itrf4~meth7( ).
+
+
+
+**------------------------------DATA VALUES-------------------------------*
+* DATA VALUES WILL JUST SET THE DEFAULT VALUES TO THE VARIABLES IN INTERFACE WHILE IMPLEMENTING INTERFACE IN ANY CLASS.
+
+*INTERFACE itrf5.
+*  data: var1 TYPE i,
+*        var2 TYPE i.
+*  METHODS meth8.
+*
+*  ENDINTERFACE.
+*
+*CLASS myclass9 DEFINITION.
+*  PUBLIC SECTION.
+*  DATA var3 TYPE i.
+*  INTERFACES itrf5 DATA VALUES var1 = 100 var2 = 200.
+*ENDCLASS.
+*CLASS myclass9 IMPLEMENTATION.
+*  METHOD itrf5~meth8.
+*    itrf5~var1 = 10.
+*    itrf5~var2 = 30.
+*    var3 = itrf5~var1 + itrf5~var2.
+*    write:/ | Total is { var3 } | .
+*  ENDMETHOD.
+*ENDCLASS.
+*
+*
+*START-OF-SELECTION.
+*DATA(myobj7) = NEW myclass9( ).
+*myobj7->itrf5~meth8( ).
